@@ -3,7 +3,6 @@ defmodule LogjamAgent.Transformer do
 
   @fields_to_copy [
     :code,
-    :total_time,
     :request_id,
     :host,
     :ip
@@ -21,6 +20,7 @@ defmodule LogjamAgent.Transformer do
   def to_logjam_msg(buffer) do
     %{}
       |> add_logjam_started_at(buffer)
+      |> add_logjam_total_time(buffer)
       |> add_logjam_action(buffer)
       |> add_logjam_severity(buffer)
       |> add_logjam_lines(buffer)
@@ -29,12 +29,18 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp add_logjam_started_at(output, input) do
-    in_secs    = Time.convert(input.started_at, :secs)
+    in_secs    = Time.convert(input.action_started_at, :secs)
     epoch_secs = Date.epoch(:secs)
     in_iso     = Date.from(epoch_secs + in_secs, :secs, :zero)
                   |> Timezone.convert(Timezone.local)
                   |> to_logjam_iso8601
     Dict.put(output, :started_at, in_iso)
+  end
+
+  defp add_logjam_total_time(output, input) do
+    first_response = Dict.get(input, :response_send_at, input[:action_finished_at])
+    total_time = :timer.now_diff(first_response, input.action_started_at) |> div(1000)
+    Dict.put(output, :total_time, total_time)
   end
 
   defp add_logjam_action(output, input) do

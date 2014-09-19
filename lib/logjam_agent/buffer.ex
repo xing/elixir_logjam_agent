@@ -1,18 +1,19 @@
 defmodule LogjamAgent.Buffer do
+  alias LogjamAgent.Metadata
+  alias LogjamAgent.Forwarder
+  alias Timex.Time
+
   def start_link do
     Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
   end
 
-  def instrument(request_id \\ LogjamAgent.Metadata.current_request_id, env, action) do
-    before_time = :os.timestamp()
-    store(request_id, Dict.merge(env, started_at: before_time))
+  def instrument(request_id \\ Metadata.current_request_id, env, action) do
+    store(request_id, Dict.merge(env, action_started_at: Time.now))
 
     result = try do
       action.()
     after
-      after_time = :os.timestamp()
-      diff = :timer.now_diff(after_time, before_time)
-      store(request_id, total_time: div(diff, 1000))
+      store(request_id, action_finished_at: Time.now)
       Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
     end
     result
@@ -23,7 +24,7 @@ defmodule LogjamAgent.Buffer do
       { state[request_id], Dict.delete(state, request_id) }
     end)
 
-    LogjamAgent.Forwarder.forward(buffer)
+    Forwarder.forward(buffer)
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do

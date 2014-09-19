@@ -5,7 +5,8 @@ defmodule LogjamAgent.TransformerTest do
 
   setup_all do
     data = %{
-      started_at: {1411, 56187, 117735},
+      action_started_at: {1411, 56187, 117735},
+      action_finished_at: {1411, 58187, 117735},
       code: 200,
       method: "GET",
       function: :dummy,
@@ -45,6 +46,16 @@ defmodule LogjamAgent.TransformerTest do
   test "#to_logjam_msg transforms the start_at timestamp", data do
     result = T.to_logjam_msg(data)
     assert result.started_at == "2014-09-18T18:03:07"
+  end
+
+  test "#to_logjam_msg can calculates the diff between actions ", data do
+    result = T.to_logjam_msg(data)
+    assert result.total_time == 2000000
+  end
+
+  test "#to_logjam_msg can calculates the diff action and first response sent", data do
+    result = data |> Dict.put(:response_send_at, {1411, 69000, 117735}) |> T.to_logjam_msg
+    assert result.total_time == 12813000
   end
 
   test "#to_logjam_msg creates the logjam action", data do
