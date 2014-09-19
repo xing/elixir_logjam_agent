@@ -23,7 +23,7 @@ defmodule LogjamAgent.Buffer do
       { state[request_id], Dict.delete(state, request_id) }
     end)
 
-    Logjam.Forwarder.forward(buffer)
+    LogjamAgent.Forwarder.forward(buffer)
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do
