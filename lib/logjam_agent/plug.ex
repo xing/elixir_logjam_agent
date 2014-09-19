@@ -8,7 +8,7 @@ defmodule LogjamAgent.Plug do
   def init(opts), do: opts
 
   def call(conn, _) do
-    logjam_request_id = M.new_request_id!
+    logjam_request_id = Metadata.new_request_id!
 
     conn
      |> Conn.put_resp_header("X-Logjam-Request-Id", logjam_request_id)
