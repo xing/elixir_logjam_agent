@@ -45,9 +45,7 @@ defmodule LogjamAgent.Forwarder do
   end
 
   defp load_config do
-    # FIXME: logjam needs to be defined as application and added as such in the applications list, otherwise
-    # the config entries can't be read and just return nil within the release bundle
-    config = Application.get_env(:logjam, :forwarder) || %{enabled: false}
+    config = Application.get_env(:logjam_agent, :forwarder) || %{enabled: false}
     config |> Enum.into(%{})
   end
 
