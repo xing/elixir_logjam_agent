@@ -51,11 +51,18 @@ defmodule LogjamAgent.Forwarder do
 
   defp init_env(state) do
     connection = Exrabbit.Producer.new(
-      exchange: "request-stream-#{state.config.app_name}-#{Mix.env}",
+      exchange: "request-stream-#{state.config.app_name}-#{logjam_env}",
       conn_opts: [host: state.config.amqp.broker])
 
      state
       |> Dict.put(:amqp, connection)
-      |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{Mix.env}")
+      |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{logjam_env}")
+  end
+
+  defp logjam_env do
+    case Mix.env do
+      :prod -> :production
+      env   -> env
+    end
   end
 end
