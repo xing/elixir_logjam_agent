@@ -18,6 +18,8 @@ defmodule LogjamAgent.TransformerTest do
       query_string:  "foo=bar&fields=a,b",
       caller_action: "CALLER_ACTION",
       caller_id: "CALLER_ID",
+      rest_time: 25.99,
+      rest_calls: 1,
       log_messages: [
         %{
           pid: "#PID<0.419.0>",
@@ -93,6 +95,16 @@ defmodule LogjamAgent.TransformerTest do
   test "#to_logjam_msg includes request_id", data do
     result = T.to_logjam_msg(data)
     assert result[:request_id] == data[:request_id]
+  end
+
+  test "#to_logjam_msg includes rest_time", data do
+    result = T.to_logjam_msg(data)
+    assert result[:rest_time] == data[:rest_time]
+  end
+
+  test "#to_logjam_msg includes rest_calls", data do
+    result = T.to_logjam_msg(data)
+    assert result[:rest_calls] == data[:rest_calls]
   end
 
   test "#to_logjam_msg includes the response code", data do
