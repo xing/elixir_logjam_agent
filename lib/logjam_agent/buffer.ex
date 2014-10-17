@@ -1,6 +1,6 @@
 defmodule LogjamAgent.Buffer do
   alias LogjamAgent.Metadata
-  alias LogjamAgent.Forwarder
+  alias LogjamAgent.ForwarderPool
   alias Timex.Time
 
   def start_link do
@@ -24,7 +24,7 @@ defmodule LogjamAgent.Buffer do
       { state[request_id], Dict.delete(state, request_id) }
     end)
 
-    Forwarder.forward(buffer)
+    ForwarderPool.forward(buffer)
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do

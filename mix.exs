@@ -16,7 +16,8 @@ defmodule LogjamAgent.Mixfile do
         :logger,
         :exrabbit,
         :uuid,
-        :timex
+        :timex,
+        :poolboy
       ]
     ]
   end
@@ -30,6 +31,7 @@ defmodule LogjamAgent.Mixfile do
       { :uuid,        "~> 0.1.5" },
       { :jazz,        "~> 0.2.1", override: true},
       { :exrabbit,    github: "inbetgames/exrabbit", branch: "refactoring"},
+      { :poolboy,     github: "devinus/poolboy", tag: "1.3.0" },
     ]
   end
 

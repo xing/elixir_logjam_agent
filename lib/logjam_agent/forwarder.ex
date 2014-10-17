@@ -2,7 +2,11 @@ defmodule LogjamAgent.Forwarder do
   use GenServer
 
   def start_link(args \\ []) do
-    GenServer.start_link(__MODULE__, args, name: __MODULE__)
+    GenServer.start_link(__MODULE__, args)
+  end
+
+  def forward(pid, buffer) do
+    GenServer.cast(pid, {:pool_forward, buffer})
   end
 
   def forward(buffer) do
@@ -25,6 +29,13 @@ defmodule LogjamAgent.Forwarder do
 
   def handle_call(:config, _from, state) do
     {:reply, state.config, state}
+  end
+
+  def handle_cast({:pool_forward, buffer}, state) do
+    handle_cast({:forward, buffer}, state)
+    :poolboy.checkin :logjam_forwarder_pool, self
+
+    {:noreply, state}
   end
 
   def handle_cast({:forward, buffer}, state) do
