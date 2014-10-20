@@ -44,6 +44,10 @@ defmodule LogjamAgent.Buffer do
 
   def store(request_id, dict), do: update_buffer(request_id, &Dict.merge(&1, dict))
 
+  def fetch(request_id, key) do
+    Agent.get(__MODULE__, fn(state) -> Dict.get(state, request_id)[key] end)
+  end
+
   defp update_buffer(request_id, updater) do
     Agent.update(__MODULE__, fn(state) ->
       d = if Dict.has_key?(state, request_id) do

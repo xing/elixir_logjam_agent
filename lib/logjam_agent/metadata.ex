@@ -9,4 +9,5 @@ defmodule LogjamAgent.Metadata do
   def current_request_id(id), do: Logger.metadata(logjam_request_id: id)
 
   def store(dict), do: LogjamAgent.Buffer.store(current_request_id, dict)
+  def fetch(field), do: LogjamAgent.Buffer.fetch(current_request_id, field)
 end
