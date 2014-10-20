@@ -29,7 +29,6 @@ defmodule LogjamAgent.Transformer do
       |> add_logjam_severity(buffer)
       |> add_logjam_lines(buffer)
       |> add_request_info(buffer)
-      |> add_system_info
       |> copy_fields(buffer)
   end
 
@@ -73,13 +72,6 @@ defmodule LogjamAgent.Transformer do
     Dict.put(output, :lines, lines)
   end
 
-  defp add_system_info(output) do
-    output
-    |> Dict.put(:total_memory, :erlang.memory[:total])
-    |> Dict.put(:process_count, length(Process.list))
-    |> Dict.put(:seconds_between_gc, uptime / gc_runs)
-  end
-
   defp copy_fields(output, input) do
     Dict.merge(output, Dict.take(input, @fields_to_copy))
   end
@@ -114,17 +106,5 @@ defmodule LogjamAgent.Transformer do
     iso_date = DateFormat.format!(timex_date, "{ISOdate}")
     iso_time = DateFormat.format!(timex_date, "{ISOtime}")
     if micro, do: "#{iso_date}T#{iso_time}.#{micro}", else: "#{iso_date}T#{iso_time}"
-  end
-
-  defp uptime do
-    {sec, _} = :erlang.statistics(:wall_clock)
-    sec
-  end
-
-  defp gc_runs do
-    case :erlang.statistics(:garbage_collection) do
-      {gc, _,_ } when gc == 0 -> 1
-      {gc, _,_ } -> gc
-    end
   end
 end
