@@ -23,7 +23,7 @@ defmodule LogjamAgent do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(LogjamAgent.ForwarderSupervisior, []),
+      supervisor(LogjamAgent.ForwarderSupervisor, []),
       worker(LogjamAgent.Buffer, [])
     ]
 

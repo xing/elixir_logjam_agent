@@ -1,4 +1,4 @@
-defmodule LogjamAgent.ForwarderSupervisior do
+defmodule LogjamAgent.ForwarderSupervisor do
   use Supervisor
 
   def start_link do
