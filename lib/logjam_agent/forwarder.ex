@@ -17,6 +17,10 @@ defmodule LogjamAgent.Forwarder do
     GenServer.call(__MODULE__, :config)
   end
 
+  def reload_config(pid) do
+    GenServer.cast(pid, :reload_config)
+  end
+
   def init(_) do
     state = %{config: load_config }
 
@@ -49,6 +53,12 @@ defmodule LogjamAgent.Forwarder do
 
     {:noreply, state}
   end
+
+  def handle_cast(:reload_config, _state) do
+    { :ok, new_state } = init(:ok)
+    {:noreply, new_state}
+  end
+
 
   defp debug_output(transformed) do
     IO.puts "Forwarder received data"
