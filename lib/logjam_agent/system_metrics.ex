@@ -25,14 +25,27 @@ defmodule LogjamAgent.SystemMetrics do
     { :reply, state, state }
   end
 
-  def handle_cast(:update, state) do
+  def handle_cast(:update, _state) do
     { :noreply, get_metrics }
   end
 
   defp get_metrics do
     %{
-      processes: length(Process.list)
+      processes: length(Process.list),
+      time_between_gc: uptime / gc_runs,
+      total_memory: :erlang.memory[:total]
     }
   end
 
+  defp uptime do
+    {sec, _} = :erlang.statistics(:wall_clock)
+    sec
+  end
+
+  defp gc_runs do
+    case :erlang.statistics(:garbage_collection) do
+      {gc, _,_ } when gc == 0 -> 1
+      {gc, _,_ } -> gc
+    end
+  end
 end
