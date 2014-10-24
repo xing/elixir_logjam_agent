@@ -24,6 +24,7 @@ defmodule LogjamAgent do
 
     children = [
       supervisor(LogjamAgent.ForwarderSupervisor, []),
+      worker(LogjamAgent.SystemMetrics, []),
       worker(LogjamAgent.Buffer, [])
     ]
 
