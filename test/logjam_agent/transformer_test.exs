@@ -65,6 +65,11 @@ defmodule LogjamAgent.TransformerTest do
     assert result.action == "RestProxy::DummyController#dummy"
   end
 
+  test "#to_logjam_msg checks for override_action field", data do
+    result = data |> Dict.put(:override_action, "Foo#bar") |> T.to_logjam_msg
+    assert result.action == "Foo#bar"
+  end
+
   test "#to_logjam_msg drops transient fields", data do
     result = T.to_logjam_msg(data)
     assert result[:function] == nil

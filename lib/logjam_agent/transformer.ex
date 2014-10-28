@@ -49,11 +49,19 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp add_logjam_action(output, input) do
+    action = case Dict.fetch(input, :override_action) do
+      {:ok, value} -> value
+      :error       -> default_logjam_action(input)
+    end
+    Dict.put(output, :action, action)
+  end
+
+  defp default_logjam_action(input) do
     module_name = input.module
                   |> Atom.to_string
                   |> String.replace("Elixir.", "")
                   |> String.replace(".", "::")
-    Dict.put(output, :action, "#{module_name}##{input.function}")
+    "#{module_name}##{input.function}"
   end
 
   defp add_logjam_severity(output, input) do
