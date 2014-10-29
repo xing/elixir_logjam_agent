@@ -33,6 +33,14 @@ defmodule LogjamAgent.Transformer do
       |> copy_fields(buffer)
   end
 
+  def logjam_action_name(module, function) do
+    module_name = module
+                  |> Atom.to_string
+                  |> String.replace("Elixir.", "")
+                  |> String.replace(".", "::")
+    "#{module_name}##{function}"
+  end
+
   defp add_logjam_started_at(output, input) do
     in_secs    = Time.convert(input.action_started_at, :secs)
     epoch_secs = Date.epoch(:secs)
@@ -57,11 +65,7 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp default_logjam_action(input) do
-    module_name = input.module
-                  |> Atom.to_string
-                  |> String.replace("Elixir.", "")
-                  |> String.replace(".", "::")
-    "#{module_name}##{input.function}"
+    logjam_action_name(input.module, input.function)
   end
 
   defp add_logjam_severity(output, input) do

@@ -13,6 +13,8 @@ defmodule LogjamAgent.Action do
           method:           unquote(conn).method
         }
 
+        var!(unquote(conn)) = Plug.Conn.put_resp_header(unquote(conn), "X-Logjam-Request-Action", LogjamAgent.Transformer.logjam_action_name(env.module, env.function))
+
         LogjamAgent.Buffer.instrument(env, fn ->
           unquote(body[:do])
         end)
