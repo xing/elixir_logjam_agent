@@ -5,16 +5,12 @@ defmodule LogjamAgent.Forwarder do
     GenServer.start_link(__MODULE__, args)
   end
 
-  def forward(pid, buffer) do
-    GenServer.cast(pid, {:pool_forward, buffer})
+  def forward(pid, msg) do
+    GenServer.cast(pid, {:forward, msg, :log})
   end
 
-  def forward(buffer) do
-    GenServer.cast(__MODULE__, {:forward, buffer})
-  end
-
-  def config do
-    GenServer.call(__MODULE__, :config)
+  def forward_event(pid, msg) do
+    GenServer.cast(pid, {:forward, msg, :event})
   end
 
   def reload_config(pid) do
@@ -35,23 +31,12 @@ defmodule LogjamAgent.Forwarder do
     {:reply, state.config, state}
   end
 
-  def handle_cast({:pool_forward, buffer}, state) do
-    handle_cast({:forward, buffer}, state)
-    :poolboy.checkin :logjam_forwarder_pool, self
-
-    {:noreply, state}
+  def handle_cast({:forward, msg, :log}, state) do
+    forward(msg, state, state.routing_key)
   end
 
-  def handle_cast({:forward, buffer}, state) do
-    msg = LogjamAgent.Transformer.to_logjam_msg(buffer)
-
-    if state.config.enabled do
-      Exrabbit.Producer.publish(state.amqp, Jazz.encode!(msg), routing_key: state.routing_key)
-    else
-      debug_output(msg)
-    end
-
-    {:noreply, state}
+  def handle_cast({:forward, msg, :event}, state) do
+    forward(msg, state, state.event_routing_key)
   end
 
   def handle_cast(:reload_config, _state) do
@@ -59,6 +44,17 @@ defmodule LogjamAgent.Forwarder do
     {:noreply, new_state}
   end
 
+
+  defp forward(msg, state, routing_key) do
+    if state.config.enabled do
+      Exrabbit.Producer.publish(state.amqp, Jazz.encode!(msg), routing_key: routing_key)
+    else
+      debug_output(msg)
+    end
+    :poolboy.checkin :logjam_forwarder_pool, self
+
+    {:noreply, state}
+  end
 
   defp debug_output(transformed) do
     IO.puts "Forwarder received data"
@@ -78,6 +74,7 @@ defmodule LogjamAgent.Forwarder do
      state
       |> Dict.put(:amqp, connection)
       |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{logjam_env}")
+      |> Dict.put(:event_routing_key, "events.#{state.config.app_name}.#{logjam_env}")
   end
 
   defp logjam_env do

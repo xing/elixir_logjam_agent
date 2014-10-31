@@ -33,6 +33,14 @@ defmodule LogjamAgent.Transformer do
       |> copy_fields(buffer)
   end
 
+  def to_logjam_event(label) do
+    %{
+      label: label,
+      host: nil
+    }
+    |> add_logjam_started_at(%{action_started_at: Time.now})
+  end
+
   def logjam_action_name(module, function) do
     module_name = module
                   |> Atom.to_string

@@ -19,6 +19,12 @@ defmodule LogjamAgent do
     end)
   end
 
+  def send_event(label) do
+    label
+    |> LogjamAgent.Transformer.to_logjam_event
+    |> LogjamAgent.ForwarderPool.forward_event
+  end
+
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
