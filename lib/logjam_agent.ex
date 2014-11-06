@@ -19,6 +19,7 @@ defmodule LogjamAgent do
     end)
   end
 
+  def send_event(label) when is charlist(label), do: label |> List.to_string |> send_event
   def send_event(label) do
     label
     |> LogjamAgent.Transformer.to_logjam_event
@@ -37,4 +38,5 @@ defmodule LogjamAgent do
     opts = [strategy: :one_for_one, name: LogjamAgent.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
 end
