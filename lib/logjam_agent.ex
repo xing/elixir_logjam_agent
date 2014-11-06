@@ -19,7 +19,7 @@ defmodule LogjamAgent do
     end)
   end
 
-  def send_event(label) when is charlist(label), do: label |> List.to_string |> send_event
+  def send_event(label) when is_list(label), do: label |> List.to_string |> send_event
   def send_event(label) do
     label
     |> LogjamAgent.Transformer.to_logjam_event
