@@ -9,7 +9,6 @@ defmodule LogjamAgent.Action do
           function:         unquote(fun_name),
           request_headers:  unquote(conn).req_headers,
           query_string:     unquote(conn).query_string,
-          host:             unquote(conn).host,
           method:           unquote(conn).method
         }
 

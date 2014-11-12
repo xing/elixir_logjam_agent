@@ -4,7 +4,6 @@ defmodule LogjamAgent.Transformer do
   @fields_to_copy [
     :code,
     :request_id,
-    :host,
     :ip,
     :rest_time,
     :rest_calls,

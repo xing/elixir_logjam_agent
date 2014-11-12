@@ -30,10 +30,20 @@ defmodule LogjamAgent.SystemMetrics do
   end
 
   defp get_metrics do
+    Dict.merge(static_metrics, dynamic_metrics)
+  end
+
+  defp dynamic_metrics do
     %{
       processes: length(Process.list),
       time_between_gc: uptime / gc_runs,
       total_memory: :erlang.memory[:total]
+    }
+  end
+
+  defp static_metrics do
+    %{
+      host: hostname
     }
   end
 
@@ -46,6 +56,13 @@ defmodule LogjamAgent.SystemMetrics do
     case :erlang.statistics(:garbage_collection) do
       {gc, _,_ } when gc == 0 -> 1
       {gc, _,_ } -> gc
+    end
+  end
+
+  defp hostname do
+    case System.cmd("hostname", ["-f"]) do
+      {hostname, 0} -> hostname |> String.strip
+      _             -> nil
     end
   end
 end
