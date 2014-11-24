@@ -33,11 +33,11 @@ defmodule LogjamAgent.Forwarder do
   end
 
   def handle_cast({:forward, msg, :log}, state) do
-    forward(msg, state, state.routing_key)
+    forward(msg, state, Dict.get(state, :routing_key))
   end
 
   def handle_cast({:forward, msg, :event}, state) do
-    forward(msg, state, state.event_routing_key)
+    forward(msg, state, Dict.get(state, :event_routing_key))
   end
 
   def handle_cast(:reload_config, _state) do
