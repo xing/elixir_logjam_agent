@@ -1,5 +1,6 @@
 defmodule LogjamAgent.Forwarder do
   use GenServer
+  alias LogjamAgent.Metadata
 
   def start_link(args \\ []) do
     GenServer.start_link(__MODULE__, args)
@@ -18,7 +19,7 @@ defmodule LogjamAgent.Forwarder do
   end
 
   def init(_) do
-    state = %{config: load_config }
+    state = %{config: LogjamAgent.Config.current }
 
     if state.config.enabled do
       { :ok, init_env(state) }
@@ -61,26 +62,15 @@ defmodule LogjamAgent.Forwarder do
     IO.inspect(transformed)
   end
 
-  defp load_config do
-    config = Application.get_env(:logjam_agent, :forwarder) || %{enabled: false}
-    config |> Enum.into(%{})
-  end
-
   defp init_env(state) do
     connection = Exrabbit.Producer.new(
-      exchange: "request-stream-#{state.config.app_name}-#{logjam_env}",
+      exchange: "request-stream-#{state.config.app_name}-#{Metadata.logjam_env}",
       conn_opts: [host: state.config.amqp.broker])
 
      state
       |> Dict.put(:amqp, connection)
-      |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{logjam_env}")
-      |> Dict.put(:event_routing_key, "events.#{state.config.app_name}.#{logjam_env}")
+      |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{Metadata.logjam_env}")
+      |> Dict.put(:event_routing_key, "events.#{state.config.app_name}.#{Metadata.logjam_env}")
   end
 
-  defp logjam_env do
-    case Mix.env do
-      :prod -> :production
-      env   -> env
-    end
-  end
 end
