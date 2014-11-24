@@ -106,8 +106,8 @@ defmodule LogjamAgent.Transformer do
     query_string = Dict.get(input, :query_string, "")
 
     output
-    |> Dict.put(:caller_id, req_headers["X-Logjam-Caller-Id"])
-    |> Dict.put(:caller_action, req_headers["X-Logjam-Action"])
+    |> Dict.put(:caller_id, req_headers["x-logjam-caller-id"])
+    |> Dict.put(:caller_action, req_headers["x-logjam-action"])
     |> Dict.put(:request_info, %{
         query_parameters: Plug.Conn.Query.decode(query_string),
         headers: req_headers,
