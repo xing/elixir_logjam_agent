@@ -76,7 +76,10 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp add_logjam_severity(output, input) do
-    winner = Enum.max_by(input.log_messages, &to_logjam_log_level/1)
+    winner = case input.log_messages do
+      []       -> %{level: :info}
+      messages -> Enum.max_by(messages, &to_logjam_log_level/1)
+    end
     Dict.put(output, :severity, to_logjam_log_level(winner))
   end
 
