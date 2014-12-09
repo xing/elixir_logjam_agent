@@ -8,7 +8,8 @@ defmodule LogjamAgent.Transformer do
     :rest_time,
     :rest_calls,
     :db_time,
-    :db_calls
+    :db_calls,
+    :exceptions
   ]
 
   @logjam_severities %{
