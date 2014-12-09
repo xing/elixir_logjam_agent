@@ -36,6 +36,7 @@ defmodule LogjamAgent.SystemMetrics do
   defp dynamic_metrics do
     %{
       processes: length(Process.list),
+      run_queue: :erlang.statistics(:run_queue),
       time_between_gc: uptime / gc_runs,
       total_memory: :erlang.memory[:total]
     }
