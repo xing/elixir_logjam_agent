@@ -28,8 +28,8 @@ the buffered data to an amqp broker.
 config :logjam_agent, :forwarder,
   enabled: true,
   app_name: "profileproxy",
-  pool_max_overflow: 1, # FIXME: These are required, though I'm not sure about the values
-  pool_size: 1,         #
+  pool_max_overflow: 10,
+  pool_size: 20,
   amqp: %{
     broker: 'broker-1.monitor.edge.fra1.xing.com'
   }
