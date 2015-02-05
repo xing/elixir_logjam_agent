@@ -43,7 +43,7 @@ config :logjam_agent, :forwarder,
 
 `Phoenix` also needs some minor changes.
 
-In your `web/router.ex` file replace `use Phoenix.Router` with `use Logjam.Router`.
+In your `web/router.ex` file replace `use Phoenix.Router` with `use LogjamAgent.Router`.
 
 ``` Elixir
 defmodule RestProxy.Router do
@@ -53,7 +53,7 @@ defmodule RestProxy.Router do
 end
 ```
 
-In your  `web/controllers/*` files replace `use Phoenix.Controller` with `use Logjam.Controller`.
+In your  `web/controllers/*` files replace `use Phoenix.Controller` with `use LogjamAgent.Controller`.
 In addition to that use the `defaction` macro instead of `def` in order to define your controller action.
 
 ``` Elixir
