@@ -1,7 +1,7 @@
 Logjam agent for Elixir / Phoenix
 ===========
 
-This package provides integration with the [Logjam](https://github.com/skaes/logjam_core) monitoring tool for apps that 
+This package provides integration with the [Logjam](https://github.com/skaes/logjam_core) monitoring tool for apps that
 use the [Phoenix framework](https://github.com/phoenixframework/phoenix).
 
 It buffers all log output for a request and sends the result to a configured AMQP broker when the request was finished.
@@ -9,7 +9,7 @@ It buffers all log output for a request and sends the result to a configured AMQ
 # Setup
 
 ## Configuration
-`LogjamAgent` uses a custom `Elixir.Logger` backend to capture and buffer outgoing log output. In the 
+`LogjamAgent` uses a custom `Elixir.Logger` backend to capture and buffer outgoing log output. In the
 `config/config.exs` you have to configure the `LogjamAgent.LoggerBackend` as one of the `backends`.
 
 ``` Elixir
@@ -21,13 +21,15 @@ config :logger,
 
 ```
 
-Another thing that needs to be configured in the `config/config.exs` is the forwarder which pushes 
+Another thing that needs to be configured in the `config/config.exs` is the forwarder which pushes
 the buffered data to an amqp broker.
 
 ``` Elixir
 config :logjam_agent, :forwarder,
   enabled: true,
   app_name: "profileproxy",
+  pool_max_overflow: 10,
+  pool_size: 20,
   amqp: %{
     broker: 'broker-1.monitor.edge.fra1.xing.com'
   }
@@ -41,7 +43,7 @@ config :logjam_agent, :forwarder,
 
 `Phoenix` also needs some minor changes.
 
-In your `web/router.ex` file replace `use Phoenix.Router` with `use Logjam.Router`.
+In your `web/router.ex` file replace `use Phoenix.Router` with `use LogjamAgent.Router`.
 
 ``` Elixir
 defmodule RestProxy.Router do
@@ -51,7 +53,7 @@ defmodule RestProxy.Router do
 end
 ```
 
-In your  `web/controllers/*` files replace `use Phoenix.Controller` with `use Logjam.Controller`.
+In your  `web/controllers/*` files replace `use Phoenix.Controller` with `use LogjamAgent.Controller`.
 In addition to that use the `defaction` macro instead of `def` in order to define your controller action.
 
 ``` Elixir
@@ -64,11 +66,19 @@ defmodule RestProxy.ProxyController do
 end
 ```
 
+Add Logjam to the application section into your mix.exs i.e.:
+
+```
+def application do
+  [applications: [..., :logjam_agent], mod: {...}]
+end
+```
+
 # Note on Patches/Pull Requests ###
 * Fork the project on Github.
 * Make your feature addition or bug fix.
 * Add tests for it, making sure $ mix test is all green.
 * Do not rebase other commits than your own
 * Do not change the version in the mix file
-* Commit 
+* Commit
 * Send a pull request
