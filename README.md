@@ -66,17 +66,11 @@ defmodule RestProxy.ProxyController do
 end
 ```
 
-Add Logjam to a supervisor i.e.:
+Add Logjam to the application section into your mix.exs i.e.:
 
 ```
-def start(type, args) do
-  ...
-
-  children = [
-    worker(LogjamAgent, [type, args], function: :start)
-  ]
-
-  ...
+def application do
+  [applications: [..., :logjam_agent], mod: {...}]
 end
 ```
 
