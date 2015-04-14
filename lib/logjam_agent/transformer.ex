@@ -131,10 +131,22 @@ defmodule LogjamAgent.Transformer do
     Date.from({date, {h,m,s}}, :local) |> to_logjam_iso8601(micro)
   end
 
-  defp to_logjam_iso8601(timex_date, micro \\ nil) do
-    iso_date = DateFormat.format!(timex_date, "{ISOdate}")
-    iso_time = DateFormat.format!(timex_date, "{ISOtime}")
-    if micro, do: "#{iso_date}T#{iso_time}.#{micro}", else: "#{iso_date}T#{iso_time}"
+  defp to_logjam_iso8601(time, micro) do
+    "#{to_logjam_iso8601(time)}.#{micro}"
   end
+
+  defp to_logjam_iso8601(%Timex.DateTime{
+                           year: year,
+                           day: day,
+                           month: month,
+                           hour: hour,
+                           minute: minute,
+                           second: second
+                         }) do
+    "#{year}-#{pad month}-#{pad day}T#{pad hour}:#{pad minute}:#{pad second}"
+  end
+
+  defp pad(number) when number > 9, do: "#{number}"
+  defp pad(number), do: "0#{number}"
 
 end
