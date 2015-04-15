@@ -26,11 +26,11 @@ defmodule LogjamAgent.Mixfile do
     [
       { :cowboy,      "~> 1.0.0", optional: true},
       { :plug,        "~> 0.7.0"},
-      { :httpotion,   "~> 2.0" },
+      { :httpotion,   "~> 0.2.0" },
       { :timex,       "~> 0.12.9" },
       { :uuid,        "~> 0.1.5" },
       { :jazz,        "~> 0.2.1", override: true},
-      { :exrabbit,    github: "nLight/exrabbit", branch: "refactoring"},
+      { :exrabbit,    github: "inbetgames/exrabbit", branch: "refactoring"},
       { :poolboy,     github: "devinus/poolboy", tag: "1.3.0" },
     ]
   end
