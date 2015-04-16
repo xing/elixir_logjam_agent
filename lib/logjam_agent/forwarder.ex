@@ -1,6 +1,7 @@
 defmodule LogjamAgent.Forwarder do
   use GenServer
   alias LogjamAgent.Metadata
+  alias LogjamAgent.Transformer
 
   def start_link(args \\ []) do
     GenServer.start_link(__MODULE__, args)
@@ -47,10 +48,11 @@ defmodule LogjamAgent.Forwarder do
 
 
   defp forward(msg, state, routing_key) do
+    logjam_msg = msg |> Transformer.to_logjam_msg
     if state.config.enabled do
-      Exrabbit.Producer.publish(state.amqp, Jazz.encode!(msg), routing_key: routing_key)
+      Exrabbit.Producer.publish(state.amqp, Jazz.encode!(logjam_msg), routing_key: routing_key)
     else
-      debug_output(msg)
+      debug_output(logjam_msg)
     end
     :poolboy.checkin :logjam_forwarder_pool, self
 
