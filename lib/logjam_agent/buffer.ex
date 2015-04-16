@@ -2,19 +2,18 @@ defmodule LogjamAgent.Buffer do
   alias LogjamAgent.Metadata
   alias LogjamAgent.ForwarderPool
   alias LogjamAgent.Transformer
-  alias Timex.Time
 
   def start_link do
     Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
   end
 
   def instrument(request_id \\ Metadata.current_request_id, env, action) do
-    store(request_id, Dict.merge(env, action_started_at: Time.now))
+    store(request_id, Dict.merge(env, action_started_at: :os.timestamp))
 
     result = try do
       action.()
     after
-      store(request_id, action_finished_at: Time.now)
+      store(request_id, action_finished_at: :os.timestamp)
       Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
     end
     result

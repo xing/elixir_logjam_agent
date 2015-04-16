@@ -3,7 +3,6 @@ defmodule LogjamAgent.Plug do
 
   alias Plug.Conn
   alias LogjamAgent.Metadata
-  alias Timex.Time
 
   def init(opts), do: opts
 
@@ -13,7 +12,7 @@ defmodule LogjamAgent.Plug do
     conn
      |> Conn.put_resp_header("X-Logjam-Request-Id", logjam_request_id)
      |> Conn.register_before_send(fn conn ->
-          Metadata.store(code: conn.status, response_send_at: Time.now)
+          Metadata.store(code: conn.status, response_send_at: :os.timestamp)
           conn
         end)
   end

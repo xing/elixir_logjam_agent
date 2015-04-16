@@ -28,7 +28,7 @@ defmodule LogjamAgent.LoggerBackend do
     %{format: format, metadata: metadata, level: level}
   end
 
-  defp log_event(level, msg, timestamp, metadata, _) do
+  def log_event(level, msg, timestamp, metadata, _) do
     LogjamAgent.Buffer.log(level, msg, timestamp, Enum.into(metadata, %{}))
   end
 end

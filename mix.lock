@@ -9,5 +9,4 @@
   "poolboy": {:git, "git://github.com/devinus/poolboy.git", "17d1582533af5c076117e2e1270f4b43faa02f12", [tag: "1.3.0"]},
   "rabbit_common": {:git, "git://github.com/issuu/rabbit_common.git", "e3484d3ea4d9b57ae12da58c5c9dcf529a686139", [tag: "v3.3.0"]},
   "ranch": {:hex, :ranch, "1.0.0"},
-  "timex": {:hex, :timex, "0.12.9"},
   "uuid": {:hex, :uuid, "0.1.5"}}

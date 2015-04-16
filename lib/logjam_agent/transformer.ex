@@ -1,5 +1,4 @@
 defmodule LogjamAgent.Transformer do
-  use Timex
 
   @fields_to_copy [
     :code,
@@ -38,7 +37,7 @@ defmodule LogjamAgent.Transformer do
       label: label,
       host: nil
     }
-    |> add_logjam_started_at(%{action_started_at: Time.now})
+    |> add_logjam_started_at(%{action_started_at: :os.timestamp})
   end
 
   def logjam_action_name(module, function) do
@@ -50,11 +49,9 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp add_logjam_started_at(output, input) do
-    in_secs    = Time.convert(input.action_started_at, :secs)
-    epoch_secs = Date.epoch(:secs)
-    in_iso     = Date.from(epoch_secs + in_secs, :secs, :zero)
-                  |> Timezone.convert(Timezone.local)
-                  |> to_logjam_iso8601
+    in_iso = :calendar.now_to_local_time(input.action_started_at)
+             |> to_logjam_iso8601
+
     Dict.put(output, :started_at, in_iso)
   end
 
@@ -128,21 +125,14 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp logger_timestamp_to_iso8601({date, {h, m, s, micro}}) do
-    Date.from({date, {h,m,s}}, :local) |> to_logjam_iso8601(micro)
+    to_logjam_iso8601({date, {h,m,s}}, micro)
   end
 
   defp to_logjam_iso8601(time, micro) do
     "#{to_logjam_iso8601(time)}.#{micro}"
   end
 
-  defp to_logjam_iso8601(%Timex.DateTime{
-                           year: year,
-                           day: day,
-                           month: month,
-                           hour: hour,
-                           minute: minute,
-                           second: second
-                         }) do
+  defp to_logjam_iso8601({{year,month,day},{hour,minute,second}}) do
     "#{year}-#{pad month}-#{pad day}T#{pad hour}:#{pad minute}:#{pad second}"
   end
 
