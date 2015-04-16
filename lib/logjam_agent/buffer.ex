@@ -1,6 +1,7 @@
 defmodule LogjamAgent.Buffer do
   alias LogjamAgent.Metadata
   alias LogjamAgent.ForwarderPool
+  alias LogjamAgent.Transformer
 
   def start_link do
     Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
@@ -23,7 +24,9 @@ defmodule LogjamAgent.Buffer do
       { state[request_id], Dict.delete(state, request_id) }
     end)
 
-    buffer |> ForwarderPool.forward
+    buffer
+    |> Transformer.to_logjam_msg
+    |> ForwarderPool.forward
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do
