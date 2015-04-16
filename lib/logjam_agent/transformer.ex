@@ -136,7 +136,7 @@ defmodule LogjamAgent.Transformer do
     "#{year}-#{pad month}-#{pad day}T#{pad hour}:#{pad minute}:#{pad second}"
   end
 
-  defp pad(number) when number > 9, do: "#{number}"
-  defp pad(number), do: "0#{number}"
+  defp pad(number) when number > 9, do: Integer.to_string(number)
+  defp pad(number), do: "0" <> Integer.to_string(number)
 
 end
