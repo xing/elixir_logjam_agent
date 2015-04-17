@@ -45,7 +45,6 @@ defmodule LogjamAgent.Forwarder do
     {:noreply, new_state}
   end
 
-
   defp forward(msg, state, routing_key) do
     if state.config.enabled do
       Exrabbit.Producer.publish(state.amqp, Jazz.encode!(msg), routing_key: routing_key)
@@ -67,10 +66,16 @@ defmodule LogjamAgent.Forwarder do
       exchange: "request-stream-#{state.config.app_name}-#{Metadata.logjam_env}",
       conn_opts: [host: state.config.amqp.broker])
 
+    link_with_connection(connection)
+
      state
       |> Dict.put(:amqp, connection)
       |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{Metadata.logjam_env}")
       |> Dict.put(:event_routing_key, "events.#{state.config.app_name}.#{Metadata.logjam_env}")
+  end
+
+  def link_with_connection(%Exrabbit.Producer{conn: conn}) do
+    Process.link(conn)
   end
 
 end
