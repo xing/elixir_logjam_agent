@@ -11,6 +11,15 @@ defmodule LogjamAgent do
     end)
   end
 
+  @spec spawn((() -> any)) :: pid
+  def spawn(fun) do
+    request_id = M.current_request_id
+    Kernel.spawn(fn ->
+      M.current_request_id(request_id)
+      fun.()
+    end)
+  end
+
   def async_task(fun) do
     request_id = M.current_request_id
     Task.async(fn ->
