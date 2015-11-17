@@ -6,6 +6,8 @@ defmodule LogjamAgent.Transformer do
     :ip,
     :rest_time,
     :rest_calls,
+    :redis_time,
+    :redis_calls,
     :db_time,
     :db_calls,
     :exceptions

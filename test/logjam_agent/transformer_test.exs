@@ -20,6 +20,8 @@ defmodule LogjamAgent.TransformerTest do
       caller_id: "CALLER_ID",
       rest_time: 25.99,
       rest_calls: 1,
+      redis_time: 0.99,
+      redis_calls: 2,
       log_messages: [
         %{
           pid: "#PID<0.419.0>",
@@ -110,6 +112,16 @@ defmodule LogjamAgent.TransformerTest do
   test "#to_logjam_msg includes rest_calls", data do
     result = T.to_logjam_msg(data)
     assert result[:rest_calls] == data[:rest_calls]
+  end
+
+  test "#to_logjam_msg includes redis_time", data do
+    result = T.to_logjam_msg(data)
+    assert result[:redis_time] == data[:redis_time]
+  end
+
+  test "#to_logjam_msg includes redis_calls", data do
+    result = T.to_logjam_msg(data)
+    assert result[:redis_calls] == data[:redis_calls]
   end
 
   test "#to_logjam_msg includes the response code", data do
