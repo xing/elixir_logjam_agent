@@ -10,6 +10,7 @@ defmodule LogjamAgent.Transformer do
     :redis_calls,
     :db_time,
     :db_calls,
+    :wait_time,
     :exceptions
   ]
 
