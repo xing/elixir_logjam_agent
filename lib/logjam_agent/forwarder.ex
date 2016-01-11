@@ -33,7 +33,11 @@ defmodule LogjamAgent.Forwarder do
   end
 
   def handle_cast({:forward, msg, :log}, state) do
-    forward(msg, state, Dict.get(state, :routing_key))
+    if message_high_water_mark?(state.config.forwarder_high_water_mark) do
+      {:noreply, state}
+    else
+      forward(msg, state, Dict.get(state, :routing_key))
+    end
   end
 
   def handle_cast({:forward, msg, :event}, state) do
@@ -72,6 +76,12 @@ defmodule LogjamAgent.Forwarder do
       |> Dict.put(:amqp, connection)
       |> Dict.put(:routing_key, "logs.#{state.config.app_name}.#{Metadata.logjam_env}")
       |> Dict.put(:event_routing_key, "events.#{state.config.app_name}.#{Metadata.logjam_env}")
+  end
+
+  defp message_high_water_mark?(nil), do: false
+  defp message_high_water_mark?(high_water_mark) do
+    {:message_queue_len, len} = Process.info(self, :message_queue_len)
+    len > high_water_mark
   end
 
   def link_with_connection(%Exrabbit.Producer{conn: conn}) do
