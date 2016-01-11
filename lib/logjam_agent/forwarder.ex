@@ -49,7 +49,7 @@ defmodule LogjamAgent.Forwarder do
     if state.config.enabled do
       Exrabbit.Producer.publish(state.amqp, Jazz.encode!(msg), routing_key: routing_key)
     else
-      debug_output(msg)
+      if state.config.debug_to_stdout, do: debug_output(msg)
     end
     :poolboy.checkin :logjam_forwarder_pool, self
 
