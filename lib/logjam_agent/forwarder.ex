@@ -2,6 +2,8 @@ defmodule LogjamAgent.Forwarder do
   use GenServer
   alias LogjamAgent.Metadata
 
+  @heartbeat 60
+
   def start_link(args \\ []) do
     GenServer.start_link(__MODULE__, args)
   end
@@ -68,7 +70,7 @@ defmodule LogjamAgent.Forwarder do
   defp init_env(state) do
     connection = Exrabbit.Producer.new(
       exchange: "request-stream-#{state.config.app_name}-#{Metadata.logjam_env}",
-      conn_opts: [host: state.config.amqp.broker])
+      conn_opts: [host: state.config.amqp.broker, heartbeat: @heartbeat])
 
     link_with_connection(connection)
 
