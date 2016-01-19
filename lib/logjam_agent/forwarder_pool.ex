@@ -6,11 +6,19 @@ defmodule LogjamAgent.ForwarderPool do
   end
 
   def forward(msg) do
-    GenServer.cast(__MODULE__, {:forward, msg})
+    try do
+      GenServer.cast(:foo, {:forward, msg})
+    rescue
+      e in ArgumentError -> :noproc
+    end
   end
 
   def forward_event(msg) do
-    GenServer.cast(__MODULE__, {:forward_event, msg})
+    try do
+      GenServer.cast(__MODULE__, {:forward_event, msg})
+    rescue
+      e in ArgumentError -> :noproc
+    end
   end
 
   def reload_config do
