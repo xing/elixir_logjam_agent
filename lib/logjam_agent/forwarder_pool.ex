@@ -9,7 +9,7 @@ defmodule LogjamAgent.ForwarderPool do
     try do
       GenServer.cast(__MODULE__, {:forward, msg})
     rescue
-      e in ArgumentError -> :noproc
+      ArgumentError -> :noproc
     end
   end
 
@@ -17,7 +17,7 @@ defmodule LogjamAgent.ForwarderPool do
     try do
       GenServer.cast(__MODULE__, {:forward_event, msg})
     rescue
-      e in ArgumentError -> :noproc
+      ArgumentError -> :noproc
     end
   end
 

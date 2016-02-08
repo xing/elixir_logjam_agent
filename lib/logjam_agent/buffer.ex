@@ -1,4 +1,6 @@
 defmodule LogjamAgent.Buffer do
+  require Logger
+
   alias LogjamAgent.Metadata
   alias LogjamAgent.ForwarderPool
   alias LogjamAgent.Transformer
