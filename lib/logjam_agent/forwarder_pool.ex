@@ -26,7 +26,7 @@ defmodule LogjamAgent.ForwarderPool do
   end
 
   def init(_) do
-    { :ok, %{} }
+    {:ok, %{}}
   end
 
   def handle_cast({:forward, msg}, state) do

@@ -18,8 +18,9 @@ defmodule LogjamAgent.Metadata do
   end
 
   def logjam_env do
-    case Mix.env do
+    case Config.current.env do
       :prod -> :production
+      :prev -> :preview
       env   -> env
     end
   end

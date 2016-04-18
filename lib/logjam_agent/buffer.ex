@@ -14,6 +14,8 @@ defmodule LogjamAgent.Buffer do
 
     result = try do
       action.()
+    catch
+      kind, reason -> log_error_and_reraise(kind, reason, System.stacktrace, %{logjam_request_id: request_id, pid: self})
     after
       store(request_id, action_finished_at: :os.timestamp)
       Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
@@ -21,9 +23,18 @@ defmodule LogjamAgent.Buffer do
     result
   end
 
+  def store(request_id, dict), do: update_buffer(request_id, &Dict.merge(&1, dict))
+
+  defp log_error_and_reraise(kind, reason, stack, meta) do
+    timestamp = Logger.Utils.timestamp(Logger.Config.__data__.utc_log)
+
+    log(:error, Exception.format(kind, reason, stack), timestamp, meta)
+    :erlang.raise(kind, reason, stack)
+  end
+
   def log(_, _, _, %{logjam_request_id: request_id, logjam_signal: :finished}) do
     buffer = Agent.get_and_update(__MODULE__, fn(state) ->
-      { state[request_id], Dict.delete(state, request_id) }
+      {state[request_id], Dict.delete(state, request_id)}
     end)
 
     buffer
@@ -46,8 +57,6 @@ defmodule LogjamAgent.Buffer do
 
   def log(_, _, _, _), do: nil
 
-  def store(request_id, dict), do: update_buffer(request_id, &Dict.merge(&1, dict))
-
   def fetch(request_id, key) do
     Agent.get(__MODULE__, fn(state) -> Dict.get(state, request_id)[key] end)
   end
@@ -57,7 +66,7 @@ defmodule LogjamAgent.Buffer do
       d = if Dict.has_key?(state, request_id) do
         state
       else
-        Dict.put(state, request_id, %{ request_id: request_id, log_messages: [] })
+        Dict.put(state, request_id, %{request_id: request_id, log_messages: []})
       end
 
       Dict.update!(d, request_id, updater)
