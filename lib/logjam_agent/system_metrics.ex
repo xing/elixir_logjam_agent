@@ -18,15 +18,15 @@ defmodule LogjamAgent.SystemMetrics do
 
   def init(_) do
     :timer.apply_interval(@update_interval, LogjamAgent.SystemMetrics, :update, [])
-    { :ok, get_metrics }
+    {:ok, get_metrics}
   end
 
   def handle_call(:get, _from, state) do
-    { :reply, state, state }
+    {:reply, state, state}
   end
 
   def handle_cast(:update, _state) do
-    { :noreply, get_metrics }
+    {:noreply, get_metrics}
   end
 
   defp get_metrics do
@@ -55,15 +55,15 @@ defmodule LogjamAgent.SystemMetrics do
 
   defp gc_runs do
     case :erlang.statistics(:garbage_collection) do
-      {gc, _,_ } when gc == 0 -> 1
-      {gc, _,_ } -> gc
+      {gc, _,_} when gc == 0 -> 1
+      {gc, _,_} -> gc
     end
   end
 
   defp hostname do
     case System.cmd("hostname", ["-f"]) do
-      {hostname, 0} -> hostname |> String.strip
-      _             -> nil
+      {fqdn, 0} -> fqdn |> String.strip
+      _         -> nil
     end
   end
 end

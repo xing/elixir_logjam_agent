@@ -27,29 +27,39 @@ the buffered data to an amqp broker.
 ``` Elixir
 config :logjam_agent, :forwarder,
   enabled: true,
+  env: Mix.env,
   app_name: "profileproxy",
   pool_max_overflow: 10,
   pool_size: 20,
-  amqp: %{
-    broker: 'broker-1.monitor.edge.fra1.xing.com'
-  }
+  amqp:[
+    host: 'broker-1.monitor.edge.fra1.xing.com'
+  ]
 ```
 
 * `enabled` enables or disables the forwarder
 * `app_name` specifies the name of the app that is used in `Logjam`
-* `amqp/broker` specifies the address of the AMQP broker to use
+* `env` the xing environment the application runs in
+* `initial_connect_delay` the delay in milliseconds before the forwarder should connect to the broker
+* `debug_to_stdout` a boolean value indicating whether the forwarder shall print event data to stdout
+* `amqp` specifies the options passed to the amqp library. Notably the `host` and `port`.
+
+### Configuration via environment
+
+You can configure the amqp host via the `LOGJAM_BROKER` environment variable.
+Note that the environment has precedence over any setting configured in you project's config.
 
 ## Phoenix integration
 
 `Phoenix` also needs some minor changes.
 
-In your `web/router.ex` file replace `use Phoenix.Router` with `use LogjamAgent.Router`.
+In your `web/router.ex` file use `LogjamAgent.Plug` in the appropriate pipeline
 
 ``` Elixir
 defmodule RestProxy.Router do
-  use LogjamAgent.Router
-
-  get   "/dummy/*", RestProxy.DummyController, :dummy
+  pipeline :browser do
+    plug LogjamAgent.Plug
+    # ...
+  end
 end
 ```
 

@@ -22,7 +22,6 @@ defmodule LogjamAgent.ForwarderSupervisor do
   end
 
   defp config do
-    config = Application.get_env(:logjam_agent, :forwarder) || %{pool_size: 1, pool_max_overflow: 1}
-    config |> Enum.into(%{})
+    LogjamAgent.Config.current
   end
 end
