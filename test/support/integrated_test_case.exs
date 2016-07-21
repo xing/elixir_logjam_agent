@@ -16,7 +16,8 @@ defmodule LogjamAgent.IntegratedTestCase do
 
       :timer.sleep(100)
 
-      LogjamAgent.TestConsumer.messages
+
+      filter_messages(LogjamAgent.TestConsumer.messages, options[:filter])
     end
 
     def create_producer do
@@ -27,6 +28,11 @@ defmodule LogjamAgent.IntegratedTestCase do
 
     def unique_message do
       "MSG_#{inspect(make_ref)}"
+    end
+
+    defp filter_messages(messages, nil), do: messages
+    defp filter_messages(messages, rx) do
+      Enum.filter(messages, &(Regex.match?(rx, &1)))
     end
   end
 

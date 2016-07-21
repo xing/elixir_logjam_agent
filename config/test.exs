@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :logger,
-  level: :info
+  backends: [LogjamAgent.LoggerBackend]
 
 config :logjam_agent, :forwarder,
        env: :test,
@@ -9,4 +9,3 @@ config :logjam_agent, :forwarder,
        enabled: true,
        app_name: :logjam_agent,
        amqp: [host: "localhost"]
-

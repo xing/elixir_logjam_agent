@@ -1,4 +1,4 @@
-defmodule LogjamAgent.ConigTest do
+defmodule LogjamAgent.ConfigTest do
   use ExUnit.Case, async: false
 
   setup do

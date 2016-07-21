@@ -15,12 +15,12 @@ defmodule LogjamAgent.TestConsumer do
     exchange    = Keyword.get(options, :exchange, @exchange)
     routing_key = Keyword.get(options, :routing_key, "")
 
-    Queue.declare(chan, @queue, durable: false)
+    queue = Queue.declare(chan, @queue, durable: false, auto_delete: true)
     Exchange.topic(chan, exchange, auto_delete: true)
     Queue.bind(chan, @queue, exchange, routing_key: routing_key)
 
     {:ok, _consumer_tag} = Basic.consume(chan, @queue)
-    {:ok, %{channel: chan, messages: []}}
+    {:ok, %{channel: chan, messages: [], queue: queue}}
   end
 
   def exchange, do: @exchange
