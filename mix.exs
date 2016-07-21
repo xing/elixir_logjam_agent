@@ -30,7 +30,7 @@ defmodule LogjamAgent.Mixfile do
       {:amqp,      "~> 0.1.4"},
       {:poolboy,   "~> 1.5.0"},
       {:apex,      "~> 0.3.1", only: [:dev, :test]},
-      {:credo,      "~> 0.3.9", only: [:dev, :test]},
+      {:credo,      "~> 0.4", only: [:dev, :test]},
     ]
   end
 end
