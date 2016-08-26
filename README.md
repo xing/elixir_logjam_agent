@@ -63,7 +63,7 @@ defmodule RestProxy.Router do
 end
 ```
 
-In your `web/controllers/*` insert with `use LogjamAgent.Action` into your modules.
+In your `web/controllers/*` insert `use LogjamAgent.Action` into your modules.
 This will instrument all the exported functions in your controller, so that they will
 publish data to logjam. In case you have actions that you do not want to instrument, you
 can annotate them with `@logjam false`.
