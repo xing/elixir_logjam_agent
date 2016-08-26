@@ -63,22 +63,34 @@ defmodule RestProxy.Router do
 end
 ```
 
-In your  `web/controllers/*` files replace `use Phoenix.Controller` with `use LogjamAgent.Controller`.
-In addition to that use the `defaction` macro instead of `def` in order to define your controller action.
+In your `web/controllers/*` insert with `use LogjamAgent.Action` into your modules.
+This will instrument all the exported functions in your controller, so that they will
+publish data to logjam. In case you have actions that you do not want to instrument, you
+can annotate them with `@logjam false`.
 
-``` Elixir
-defmodule RestProxy.ProxyController do
-  use LogjamAgent.Controller
 
-  defaction proxy(conn, _params) do
-    json(conn, 200, %{hello: "world})
+```elixir
+defmodule MyController do
+  use LogjamAgent.Action
+
+  def index(conn, params) do
+    # will be instrumented
+  end
+
+  @logjam false
+  def not_instrumented(conn, params) do
+    # wont be instrumented
+  end
+
+  def update(conn, params) do
+    # will be instrumented
   end
 end
 ```
 
 Add Logjam to the application section into your mix.exs i.e.:
 
-```
+```elixir
 def application do
   [applications: [..., :logjam_agent], mod: {...}]
 end
