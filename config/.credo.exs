@@ -17,7 +17,7 @@
         #
         # you can give explicit globs or simply directories
         # in the latter case `**/*.{ex,exs}` will be used
-        included: ["lib/", "src/", "web/", "apps/"],
+        included: ["lib/", "test/"],
         excluded: []
       },
       #
@@ -53,15 +53,16 @@
         {Credo.Check.Readability.MaxLineLength, priority: :low, max_length: 90},
         {Credo.Check.Readability.ModuleAttributeNames},
         {Credo.Check.Readability.ModuleNames},
+        {Credo.Check.Readability.ModuleDoc, false},
         {Credo.Check.Readability.PredicateFunctionNames},
         {Credo.Check.Readability.TrailingBlankLine},
         {Credo.Check.Readability.TrailingWhiteSpace},
         {Credo.Check.Readability.VariableNames},
 
-        {Credo.Check.Refactor.ABCSize},
+        {Credo.Check.Refactor.ABCSize, max_size: 31},
         {Credo.Check.Refactor.CaseTrivialMatches},
         {Credo.Check.Refactor.CondStatements},
-        {Credo.Check.Refactor.FunctionArity},
+        {Credo.Check.Refactor.FunctionArity, max_arity: 6},
         {Credo.Check.Refactor.MatchInCondition},
         {Credo.Check.Refactor.PipeChainStart, false},
         {Credo.Check.Refactor.CyclomaticComplexity},

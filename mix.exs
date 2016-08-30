@@ -4,7 +4,7 @@ defmodule LogjamAgent.Mixfile do
   def project do
     [ app: :logjam_agent,
       version: "0.0.1",
-      elixir: "~> 1.2",
+      elixir: "~> 1.3",
       elixirc_paths: ["lib"],
       deps: deps]
   end
@@ -16,21 +16,26 @@ defmodule LogjamAgent.Mixfile do
         :logger,
         :uuid,
         :poolboy,
-        :amqp
+        :ezmq,
+        :gen_listener_tcp,
+        :sasl,
+        :lager
       ]
     ]
   end
 
   defp deps do
     [
-      {:cowboy,    "~> 1.0.0", optional: true},
-      {:plug,      "~> 1.1.2"},
-      {:uuid,      "~> 1.1.0"},
-      {:poison,    "~> 1.5.0"},
-      {:amqp,      "~> 0.1.4"},
-      {:poolboy,   "~> 1.5.0"},
-      {:apex,      "~> 0.3.1", only: [:dev, :test]},
-      {:credo,      "~> 0.4", only: [:dev, :test]},
+      {:cowboy,       "~> 1.0.0", optional: true},
+      {:plug,         "~> 1.1"},
+      {:uuid,         "~> 1.1"},
+      {:poison,       "~> 2.2"},
+      {:poolboy,      "~> 1.5"},
+      {:ezmq,         git: "https://github.com/zeromq/ezmq.git", tag: "0.2.0"},
+      {:lager,        "~> 3.2", override: true},
+      {:lager_logger, "~> 1.0"},
+      {:apex,         "~> 0.5.2", only: [:dev, :test]},
+      {:credo,        "~> 0.4", only: [:dev, :test]},
     ]
   end
 end

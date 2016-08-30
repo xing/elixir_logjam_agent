@@ -1,15 +1,13 @@
 defmodule LogjamAgent.Buffer do
   require Logger
 
-  alias LogjamAgent.Metadata
-  alias LogjamAgent.ForwarderPool
-  alias LogjamAgent.Transformer
+  alias LogjamAgent.{Transformer, Forwarders}
 
   def start_link do
     Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
   end
 
-  def instrument(request_id \\ Metadata.current_request_id, env, action) do
+  def instrument(request_id, env, action) do
     store(request_id, Dict.merge(env, action_started_at: :os.timestamp))
 
     result = try do
@@ -39,7 +37,7 @@ defmodule LogjamAgent.Buffer do
 
     buffer
     |> Transformer.to_logjam_msg
-    |> ForwarderPool.forward
+    |> Forwarders.forward
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do

@@ -36,10 +36,12 @@ defmodule LogjamAgent.Action do
 
       if Enum.empty?(action.guards) do
         quote do
+          @compile :nowarn_unused_vars
           def unquote(action.name)(unquote_splicing(action.args)), do: unquote(body)
         end
       else
         quote do
+          @compile :nowarn_unused_vars
           def unquote(action.name)(unquote_splicing(action.args)) when unquote_splicing(action.guards), do: unquote(body)
         end
       end
@@ -61,7 +63,10 @@ defmodule LogjamAgent.Action do
                                                                "x-logjam-request-action",
                                                                LogjamAgent.Transformer.logjam_action_name(env.module, env.function))
 
-        LogjamAgent.Buffer.instrument(env, fn -> unquote(action.body) end)
+        LogjamAgent.Buffer.instrument(
+          LogjamAgent.Metadata.current_request_id,
+          env,
+          fn -> unquote(action.body) end)
       end
     end
   end
@@ -87,7 +92,8 @@ defmodule LogjamAgent.Action do
   def __on_definition__(_env, _kind, _name, _args, _guards, _body), do: nil
 
   defmacro __before_compile__(%{module: mod}) do
-    instrumented_actions = Definition.instrument_actions(mod, Module.get_attribute(mod, :logjam_enabled_actions))
+    logjam_enabled_actions = Module.get_attribute(mod, :logjam_enabled_actions)
+    instrumented_actions   = Definition.instrument_actions(mod, logjam_enabled_actions)
 
     quote do
       unquote_splicing(instrumented_actions)

@@ -32,14 +32,14 @@ defmodule LogjamAgent do
   def send_event(label) do
     label
     |> LogjamAgent.Transformer.to_logjam_event
-    |> LogjamAgent.ForwarderPool.forward_event
+    |> LogjamAgent.Forwarders.forward_event
   end
 
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(LogjamAgent.ForwarderSupervisor, [], restart: :temporary),
+      supervisor(LogjamAgent.Forwarders.Supervisor, [], restart: :temporary),
       worker(LogjamAgent.SystemMetrics, []),
       worker(LogjamAgent.Buffer, [])
     ]

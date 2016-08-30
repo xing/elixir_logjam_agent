@@ -1,50 +1,12 @@
+Code.require_file("test_log_data.exs", "test/support/")
+
 defmodule LogjamAgent.TransformerTest do
   use ExUnit.Case
 
   alias LogjamAgent.Transformer, as: T
 
   setup_all do
-    data = %{
-      action_started_at: {1411, 56187, 117735},
-      action_finished_at: {1411, 58187, 117735},
-      code: 200,
-      method: "GET",
-      function: :dummy,
-      module: RestProxy.DummyController,
-      request_id: "9efb4bde3e5311e4bc483c075440625c",
-      request_headers: [
-        { "accept", "application/json" }
-      ],
-      query_string:  "foo=bar&fields=a,b",
-      caller_action: "CALLER_ACTION",
-      caller_id: "CALLER_ID",
-      rest_time: 25.99,
-      rest_calls: 1,
-      redis_time: 0.99,
-      redis_calls: 2,
-      log_messages: [
-        %{
-          pid: "#PID<0.419.0>",
-          level: :info,
-          msg: "GET /dummy",
-          timestamp: {{2014, 9, 17}, {10, 17, 58, 40}}
-        },
-        %{
-          pid: "#PID<0.419.0>",
-          level: :debug,
-          msg: "Processing by RestProxy.DummyController.dummy",
-          timestamp: {{2014, 9, 17}, {10, 17, 58, 213}}
-        },
-        %{
-          pid: "#PID<0.419.0>",
-          level: :warn,
-          msg: "Sent 200 in 180ms",
-          timestamp: {{2014, 9, 17}, {10, 17, 58, 221}}
-        }
-      ]
-    }
-
-    {:ok, data }
+    {:ok, TestLogData.new}
   end
 
   test "#to_logjam_msg transforms the start_at timestamp", data do
@@ -54,12 +16,12 @@ defmodule LogjamAgent.TransformerTest do
 
   test "#to_logjam_msg can calculates the diff between actions ", data do
     result = T.to_logjam_msg(data)
-    assert result.total_time == 2000000
+    assert result.total_time == 2_000_000
   end
 
   test "#to_logjam_msg can calculates the diff action and first response sent", data do
-    result = data |> Dict.put(:response_send_at, {1411, 69000, 117735}) |> T.to_logjam_msg
-    assert result.total_time == 12813000
+    result = data |> Dict.put(:response_send_at, {1411, 69_000, 117_735}) |> T.to_logjam_msg
+    assert result.total_time == 12_813_000
   end
 
   test "#to_logjam_msg creates the logjam action", data do
@@ -131,7 +93,7 @@ defmodule LogjamAgent.TransformerTest do
 
   test "#to_logjam_msg includes the request headers", data do
     result = T.to_logjam_msg(data)
-    assert result[:request_info][:headers] == %{ "accept" => "application/json" }
+    assert result[:request_info][:headers] == %{"accept" => "application/json"}
   end
 
   test "#to_logjam_msg includes the query string", data do

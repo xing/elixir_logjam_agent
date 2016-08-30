@@ -31,21 +31,18 @@ config :logjam_agent, :forwarder,
   app_name: "profileproxy",
   pool_max_overflow: 10,
   pool_size: 20,
-  amqp:[
-    host: 'broker-1.monitor.edge.fra1.xing.com'
-  ]
+  endpoints:[{:tcp, "broker-1.monitor.preview.fra1.xing.com", 9604}]
 ```
 
 * `enabled` enables or disables the forwarder
 * `app_name` specifies the name of the app that is used in `Logjam`
 * `env` the xing environment the application runs in
 * `initial_connect_delay` the delay in milliseconds before the forwarder should connect to the broker
-* `debug_to_stdout` a boolean value indicating whether the forwarder shall print event data to stdout
-* `amqp` specifies the options passed to the amqp library. Notably the `host` and `port`.
+* `endpoints` specifies the endpoints for the ZMQP forwarders
 
 ### Configuration via environment
 
-You can configure the amqp host via the `LOGJAM_BROKER` environment variable.
+You can configure the `logjam_agent` endpoints via the `LOGJAM_BROKER` environment variable.
 Note that the environment has precedence over any setting configured in you project's config.
 
 ## Phoenix integration
