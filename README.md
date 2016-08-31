@@ -62,19 +62,16 @@ end
 
 In your `web/controllers/*` insert `use LogjamAgent.Action` into your modules.
 This will instrument all the exported functions in your controller, so that they will
-publish data to logjam. In case you have actions that you do not want to instrument, you
-can annotate them with `@logjam false`.
-
+publish data to logjam.
 
 ```elixir
 defmodule MyController do
-  use LogjamAgent.Action
+  use LogjamAgent.Action, except: [not_instrumented: 2]
 
   def index(conn, params) do
     # will be instrumented
   end
 
-  @logjam false
   def not_instrumented(conn, params) do
     # wont be instrumented
   end
@@ -83,6 +80,19 @@ defmodule MyController do
     # will be instrumented
   end
 end
+```
+
+Note that you can exclude actions from being instrumented by specifying the `:except` option.
+All actions that match the name and arity as defined in the `:except` keyword list will
+be excluded from instrumentation.
+
+Beside this local list of actions to be excluded you can also configure a global
+list of actions to be excluded in all modules. This is done via the `:instrumentation`
+configuration.
+
+```elixir
+config :logjam_agent, :instrumentation,
+       except: [show: 1]
 ```
 
 Add Logjam to the application section into your mix.exs i.e.:

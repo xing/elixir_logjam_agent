@@ -1,36 +1,68 @@
 defmodule LogjamAgent.Action do
   @moduledoc """
   Use this module if you want to activate Logjam reporting for your
-  Phoenix controllers. It automatically prepares all exported functions
- in your module to submit data to the logjam service.
+  Phoenix controllers. It automatically instruments all exported functions
+  in your module to submit data to the logjam service.
 
   ## Example:
+  ```elixir
       defmodule UsersController do
-        use LogjamAgent.Action
+        use LogjamAgent.Action, except: [update: 2]
 
         def index(conn, params) do
           # information will be reported to logjam
         end
 
-        @logjam false
         def update(conn, params) do
           # this function will not report information to logjam
         end
       end
+  ``
+  Note that you can exclude actions from being instrumented by specifying the `:except` option.
+  All actions that match the name and arity as defined in the `:except` keyword list will
+  be excluded from instrumentation.
 
-  Note thate the `@logjam` module attribute can be used to control whether an exported function
-  shall be wired up to report to logjam. If it's set to false it will not expose logjam data.
+  Beside this local list of actions to be excluded you can also configure a global
+  list of actions to be excluded in all modules. This is done via the `:instrumentation`
+  configuration.
+
+  ```elixir
+  config :logjam_agent, :instrumentation,
+         except: [show: 1]
+  ```
   """
-  defmodule Definition do
-    defstruct name: nil, args: nil, guards: nil, body: nil
+
+  defmodule Instrumentation do
+    @default_excluded_actions [action: 2]
+
+    defmodule Definition do
+      defstruct name: nil, args: nil, guards: nil, body: nil
+    end
+
+    def exclude_action?(mod, name, arity) do
+      globally_excluded?(name, arity) || locally_excluded?(mod, name, arity)
+    end
+
+    def globally_excluded?(name, arity) do
+      globally_excluded = Application.get_env(:logjam_agent, :instrumentation, [])
+                           |> Keyword.get(:except, @default_excluded_actions)
+
+      Keyword.get(globally_excluded, name) == arity
+    end
+
+    def locally_excluded?(mod, name, arity) do
+      locally_excluded = Module.get_attribute(mod, :logjam_excluded_actions)
+
+      Keyword.get(locally_excluded, name) == arity
+    end
 
     def instrument_actions(mod, actions) do
       actions
         |> Enum.reverse
-        |> Enum.map(&augment_action(mod, &1))
+        |> Enum.map(&inject_instrumentation(mod, &1))
     end
 
-    defp augment_action(mod, action) do
+    defp inject_instrumentation(mod, action) do
       Module.make_overridable(mod, [{action.name, length(action.args)}])
       body = instrument_action(action)
 
@@ -71,10 +103,14 @@ defmodule LogjamAgent.Action do
     end
   end
 
-  defmacro __using__(_mod) do
+  defmacro __using__(opts \\ []) do
     quote do
       import LogjamAgent.Action
       Module.register_attribute(__MODULE__, :logjam_enabled_actions, accumulate: true)
+
+      excluded_actions = Keyword.get(unquote(opts), :except, [])
+      Module.register_attribute(__MODULE__, :logjam_excluded_actions, accumulate: false)
+      Module.put_attribute(__MODULE__, :logjam_excluded_actions, excluded_actions)
 
       @before_compile LogjamAgent.Action
       @on_definition  LogjamAgent.Action
@@ -83,17 +119,15 @@ defmodule LogjamAgent.Action do
 
   def __on_definition__(env, kind, name, args, guards, body)
   def __on_definition__(%{module: mod}, :def, name, args, guards, body) do
-    unless Module.get_attribute(mod, :logjam) == false do
-      Module.put_attribute(mod, :logjam_enabled_actions, %Definition{name: name, args: args, guards: guards, body: body})
+    unless Instrumentation.exclude_action?(mod, name, Enum.count(args)) do
+      Module.put_attribute(mod, :logjam_enabled_actions, %Instrumentation.Definition{name: name, args: args, guards: guards, body: body})
     end
-
-    Module.delete_attribute(mod, :logjam)
   end
   def __on_definition__(_env, _kind, _name, _args, _guards, _body), do: nil
 
   defmacro __before_compile__(%{module: mod}) do
     logjam_enabled_actions = Module.get_attribute(mod, :logjam_enabled_actions)
-    instrumented_actions   = Definition.instrument_actions(mod, logjam_enabled_actions)
+    instrumented_actions   = Instrumentation.instrument_actions(mod, logjam_enabled_actions)
 
     quote do
       unquote_splicing(instrumented_actions)
