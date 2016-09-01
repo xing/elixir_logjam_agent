@@ -35,7 +35,7 @@ defmodule LogjamAgent.Forwarders.ZMQForwarderTest do
     received_msg = JSON.decode!(msg)
 
     assert received_msg["host"] == data.host
-    assert received_msg["action"] == "RestProxy::DummyController#dummy"
+    assert received_msg["action"] == "DummyController#dummy"
     assert received_msg["severity"] == 2
     assert received_msg["total_time"] == 2_000_000
     assert [

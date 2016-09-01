@@ -54,7 +54,7 @@ defmodule LogjamAgent.ActionTest do
       TestModWithoutOptions.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "LogjamAgent::ActionTest::TestModWithoutOptions#some_action"}} = msg
+      assert {:log, %{action: "ActionTest::TestModWithoutOptions#some_action"}} = msg
     end
 
     test "action/2 is globally excluded" do
@@ -73,7 +73,7 @@ defmodule LogjamAgent.ActionTest do
       TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "LogjamAgent::ActionTest::TestMod#some_action"}} = msg
+      assert {:log, %{action: "ActionTest::TestMod#some_action"}} = msg
     end
 
     test "exclude actions if name and arity match" do
@@ -86,7 +86,7 @@ defmodule LogjamAgent.ActionTest do
       TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "LogjamAgent::ActionTest::TestMod#some_action"}} = msg
+      assert {:log, %{action: "ActionTest::TestMod#some_action"}} = msg
     end
 
     test "action/2 is globally excluded by default" do
