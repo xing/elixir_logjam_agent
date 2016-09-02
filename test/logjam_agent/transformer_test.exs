@@ -26,7 +26,7 @@ defmodule LogjamAgent.TransformerTest do
 
   test "#to_logjam_msg creates the logjam action", data do
     result = T.to_logjam_msg(data)
-    assert result.action == "RestProxy::DummyController#dummy"
+    assert result.action == "DummyController#dummy"
   end
 
   test "#to_logjam_msg checks for override_action field", data do
