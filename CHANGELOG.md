@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+* Support for AMQP workers [#2](https://source.xing.com/hex/logjam_agent/pull/2)
+* Strip root application name form logjam name [#1](https://source.xing.com/hex/logjam_agent/pull/1)
+
+
 ## 0.1.0 
 
 * First version with explicit versioning
