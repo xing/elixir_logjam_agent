@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Fix how exbeetle dependency is referenced
+
 ## 0.2.0
 
 * Support for AMQP workers [#2](https://source.xing.com/hex/logjam_agent/pull/2)
