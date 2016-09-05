@@ -45,13 +45,37 @@ config :logjam_agent, :forwarder,
 You can configure the `logjam_agent` endpoints via the `LOGJAM_BROKER` environment variable.
 Note that the environment has precedence over any setting configured in you project's config.
 
-## Phoenix integration
+## App integration
+
+Add `logjam_agent` to the application section into your `mix.exs` i.e.:
+
+```elixir
+def application do
+  [applications: [..., :logjam_agent], mod: {...}]
+end
+```
+
+### exbeetle integration
+
+All you need to do is to replace `use Exbeetle.Client.Handler` with `use LogjamAgent.Handler`.
+This will add all necessary functionality to your worker.
+
+```elixir
+defmodule Messages.AMQP.MessageSentHandler do
+  use LogjamAgent.Handler
+
+  def process(message) do
+  end
+end
+```
+
+### Phoenix controller integration
 
 `Phoenix` also needs some minor changes.
 
 In your `web/router.ex` file use `LogjamAgent.Plug` in the appropriate pipeline
 
-``` Elixir
+``` elixir
 defmodule RestProxy.Router do
   pipeline :browser do
     plug LogjamAgent.Plug
@@ -93,14 +117,6 @@ configuration.
 ```elixir
 config :logjam_agent, :instrumentation,
        except: [show: 1]
-```
-
-Add Logjam to the application section into your mix.exs i.e.:
-
-```elixir
-def application do
-  [applications: [..., :logjam_agent], mod: {...}]
-end
 ```
 
 # Note on Patches/Pull Requests ###

@@ -8,17 +8,25 @@ defmodule LogjamAgent.Buffer do
   end
 
   def instrument(request_id, env, action) do
-    store(request_id, Dict.merge(env, action_started_at: :os.timestamp))
+    start_request(request_id, env)
 
     result = try do
       action.()
     catch
       kind, reason -> log_error_and_reraise(kind, reason, System.stacktrace, %{logjam_request_id: request_id, pid: self})
     after
-      store(request_id, action_finished_at: :os.timestamp)
-      Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
+      finish_request(request_id)
     end
     result
+  end
+
+  def start_request(request_id, env) do
+    store(request_id, Dict.merge(env, action_started_at: :os.timestamp))
+  end
+
+  def finish_request(request_id) do
+    store(request_id, action_finished_at: :os.timestamp)
+    Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
   end
 
   def store(request_id, dict), do: update_buffer(request_id, &Dict.merge(&1, dict))
