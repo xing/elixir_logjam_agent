@@ -32,7 +32,7 @@ defmodule LogjamAgent.Mixfile do
       {:poison,       "~> 2.2"},
       {:poolboy,      "~> 1.5"},
       {:ezmq,         git: "https://github.com/zeromq/ezmq.git", tag: "0.2.0"},
-      {:exbeetle,     git: "https://source.xing.com/hex/exbeetle.git", tag: "v0.3.0"},
+      {:exbeetle,     git: "https://source.xing.com/hex/exbeetle", tag: "v0.3.0"},
       {:lager,        "~> 3.2", override: true},
       {:lager_logger, "~> 1.0"},
       {:apex,         "~> 0.5.2", only: [:dev, :test]},
