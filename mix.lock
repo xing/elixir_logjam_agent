@@ -5,6 +5,7 @@
   "cowboy": {:hex, :cowboy, "1.0.4", "a324a8df9f2316c833a470d918aaf73ae894278b8aa6226ce7a9bf699388f878", [:rebar, :make], [{:cowlib, "~> 1.0.0", [hex: :cowlib, optional: false]}, {:ranch, "~> 1.0", [hex: :ranch, optional: false]}]},
   "cowlib": {:hex, :cowlib, "1.0.2", "9d769a1d062c9c3ac753096f868ca121e2730b9a377de23dec0f7e08b1df84ee", [:make], []},
   "credo": {:hex, :credo, "0.4.8", "1e71a4c21a4bead4911498d3e0f72a90f500075cf132c3ad8976b5a474b4c594", [:mix], [{:bunt, "~> 0.1.6", [hex: :bunt, optional: false]}]},
+  "dialyze": {:hex, :dialyze, "0.2.1", "9fb71767f96649020d769db7cbd7290059daff23707d6e851e206b1fdfa92f9d", [:mix], []},
   "dotenv": {:hex, :dotenv, "2.1.0", "2a66462dbc3038c43147a67a6c4d6eab365223c4bd5ba6f6205db9da0e3e3068", [:mix], []},
   "eredis": {:hex, :eredis, "1.0.8", "ab4fda1c4ba7fbe6c19c26c249dc13da916d762502c4b4fa2df401a8d51c5364", [:rebar], []},
   "exbeetle": {:git, "https://source.xing.com/hex/exbeetle", "69974d95b48e1c7961fb7e8c4f406527276ed654", [tag: "v0.3.0"]},

@@ -16,7 +16,7 @@ defmodule LogjamAgent.HandlerTest do
   def create_message(payload, headers \\ nil) do
     amqp_state  = %{
       message_id: "MESSAGE_ID",
-      timeout:    12345,
+      timeout:    12_345,
       headers:    headers || [
         {"flags", :integer, "1"},
         {"sender_action", :longstr, "Messages::ThreadsController#reply"},

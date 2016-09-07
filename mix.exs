@@ -37,6 +37,7 @@ defmodule LogjamAgent.Mixfile do
       {:lager_logger, "~> 1.0"},
       {:apex,         "~> 0.5.2", only: [:dev, :test]},
       {:credo,        "~> 0.4", only: [:dev, :test]},
+      {:dialyze, "~> 0.2.0", only: [:dev, :test]}
     ]
   end
 end
