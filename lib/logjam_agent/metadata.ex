@@ -2,7 +2,7 @@ defmodule LogjamAgent.Metadata do
   alias LogjamAgent.Config
 
   def new_request_id! do
-    rid = UUID.uuid4() |> String.replace("-", "")
+    rid = UUID.uuid4(:hex)
     current_request_id(rid)
     rid
   end
