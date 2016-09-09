@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+* Switch to v4 uuids
+
 ## 0.2.1
 
 * Fix how exbeetle dependency is referenced
