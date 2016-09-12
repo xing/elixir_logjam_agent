@@ -1,8 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+* Add more accessors to `LogjamAgent.Buffer` [5fcc3ec](https://source.xing.com/hex/logjam_agent/commit/5fcc3ec9248c6be66f47b98aa9afd0f392af9540)
+* Use `:hex` format for UUID generation [#3](https://source.xing.com/hex/logjam_agent/pull/3)
+
 ## 0.3.0
 
-* Switch to v4 uuids
+* Switch to v4 UUIDs
 
 ## 0.2.1
 
