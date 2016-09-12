@@ -29,8 +29,6 @@ defmodule LogjamAgent.Buffer do
     Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
   end
 
-  def store(request_id, dict), do: update_buffer(request_id, &Dict.merge(&1, dict))
-
   defp log_error_and_reraise(kind, reason, stack, meta) do
     timestamp = Logger.Utils.timestamp(Logger.Config.__data__.utc_log)
 
@@ -65,6 +63,18 @@ defmodule LogjamAgent.Buffer do
 
   def fetch(request_id, key) do
     Agent.get(__MODULE__, fn(state) -> Dict.get(state, request_id)[key] end)
+  end
+
+  def store(request_id, dict) do
+    update_buffer(request_id, &Dict.merge(&1, dict))
+  end
+
+  def update(request_id, key, initial, fun) do
+    update_buffer(request_id, &Dict.update(&1, key, initial, fun))
+  end
+
+  def delete(request_id, key) do
+    update_buffer(request_id, &Dict.delete(&1, key))
   end
 
   defp update_buffer(request_id, updater) do
