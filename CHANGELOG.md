@@ -1,4 +1,7 @@
 # Changelog
+## 0.5.0
+
+* Add support for Phoenix' Channels and Socket [#4](https://source.xing.com/hex/logjam_agent/pull/4)
 
 ## 0.4.0
 
@@ -19,7 +22,7 @@
 * Strip root application name form logjam name [#1](https://source.xing.com/hex/logjam_agent/pull/1)
 
 
-## 0.1.0 
+## 0.1.0
 
 * First version with explicit versioning
 * Replace AMQP backend with ZMQ (based on ezmq) [#7](https://source.xing.com/architects/logjam_agent.ex/pull/7)
