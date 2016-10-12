@@ -9,6 +9,16 @@ defmodule LogjamAgent.TransformerTest do
     {:ok, TestLogData.new}
   end
 
+  defmodule TestStruct do
+    defstruct [:id]
+  end
+
+  test "#to_logjam_msg can handle structs as request_headers", data do
+    data = Map.put(data, :request_headers, %TestStruct{id: "test"})
+    result = T.to_logjam_msg(data)
+    assert result[:request_info][:headers] == %{id: "test"}
+  end
+
   test "#to_logjam_msg transforms the start_at timestamp", data do
     result = T.to_logjam_msg(data)
     assert result.started_at == "2014-09-18T18:03:07"
