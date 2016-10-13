@@ -16,52 +16,52 @@ defmodule LogjamAgent.ChannelTest do
     end
 
     def join(topic, params, socket)
-    def join(_topic, %{reject_join: true}, socket) do
+    def join(topic, %{reject_join: true}, socket) do
       :timer.sleep(50)
       {:error, %{sample: :error}}
     end
-    def join(_topic, %{exception: true}, socket) do
+    def join(topic, %{exception: true}, socket) do
       :timer.sleep(50)
       raise "BOOM"
     end
-    def join(_topic, params, socket) do
+    def join(topic, params, socket) do
       :timer.sleep(50)
       {:ok, assign_request_id(socket)}
     end
 
     def handle_in(event, params, socket)
-    def handle_in(_event, %{reply: true}, socket) do
+    def handle_in(event, %{reply: true}, socket) do
       :timer.sleep(50)
       {:reply, %{the: :reply}, socket}
     end
-    def handle_in(_event, %{exception: true}, socket) do
+    def handle_in(event, %{exception: true}, socket) do
       :timer.sleep(50)
       raise "BOOM"
     end
-    def handle_in(_event, %{stop: true}, socket) do
+    def handle_in(event, %{stop: true}, socket) do
       :timer.sleep(50)
       {:stop, :normal, socket}
     end
-    def handle_in(_event, params, socket) do
+    def handle_in(event, params, socket) do
       :timer.sleep(50)
       {:noreply, assign_request_id(socket)}
     end
 
     def handle_out(event, params, socket)
-    def handle_out(_event, %{stop: true}, socket) do
+    def handle_out(event, %{stop: true}, socket) do
       :timer.sleep(50)
       {:stop, :normal, socket}
     end
-    def handle_out(_event, %{exception: true}, socket) do
+    def handle_out(event, %{exception: true}, socket) do
       :timer.sleep(50)
       raise "BOOM"
     end
-    def handle_out(_event, params, socket) do
+    def handle_out(event, params, socket) do
       :timer.sleep(50)
       {:noreply, assign_request_id(socket)}
     end
 
-    def other(_event, _params, _socket) do
+    def other(event, _params, _socket) do
       :other
     end
   end
@@ -77,7 +77,7 @@ defmodule LogjamAgent.ChannelTest do
 
   describe ".join" do
     def perform_join(opts \\ []) do
-      topic  = Dict.get(opts, :topic, "")
+      topic  = Dict.get(opts, :topic, "THE_TOPIC")
       params = Dict.get(opts, :params, %{})
       socket = Dict.get(opts, :socket, %{assigns: %{}})
 
@@ -97,7 +97,7 @@ defmodule LogjamAgent.ChannelTest do
     test "instrumented actions publish to logjam" do
       assert {:ok, _socket} = perform_join
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "ChannelTest::TestChannel#join"}} = msg
+      assert {:log, %{action: "ChannelTest::TestChannel#join/THE_TOPIC"}} = msg
     end
 
     test "successful joins are represented as 200 status code" do
@@ -140,7 +140,7 @@ defmodule LogjamAgent.ChannelTest do
 
   describe ".handle_in" do
     def perform_handle_in(opts \\ []) do
-      event   = Dict.get(opts, :event, "")
+      event   = Dict.get(opts, :event, "THE_EVENT")
       payload = Dict.get(opts, :payload, %{})
       socket  = Dict.get(opts, :socket, %{assigns: %{}})
 
@@ -150,7 +150,7 @@ defmodule LogjamAgent.ChannelTest do
     test "instrumented actions publish to logjam" do
       assert {:noreply, _socket} = perform_handle_in
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "ChannelTest::TestChannel#handle_in"}} = msg
+      assert {:log, %{action: "ChannelTest::TestChannel#handle_in/THE_EVENT"}} = msg
     end
 
     test "request_id is assigned to the process" do
@@ -199,7 +199,7 @@ defmodule LogjamAgent.ChannelTest do
 
   describe ".handle_out" do
     def perform_handle_out(opts \\ []) do
-      event   = Dict.get(opts, :event, "")
+      event   = Dict.get(opts, :event, "THE_EVENT")
       payload = Dict.get(opts, :payload, %{})
       socket  = Dict.get(opts, :socket, %{assigns: %{}})
 
@@ -209,7 +209,7 @@ defmodule LogjamAgent.ChannelTest do
     test "instrumented actions publish to logjam" do
       assert {:noreply, _socket} = perform_handle_out
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "ChannelTest::TestChannel#handle_out"}} = msg
+      assert {:log, %{action: "ChannelTest::TestChannel#handle_out/THE_EVENT"}} = msg
     end
 
     test "request_id is assigned to the process" do

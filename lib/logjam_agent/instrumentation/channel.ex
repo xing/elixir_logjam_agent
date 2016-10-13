@@ -21,14 +21,13 @@ defmodule LogjamAgent.Instrumentation.Channel do
   end
 
   def encode_env(definition, opts) do
-    params      = Enum.at(definition.args, 1)
-    socket      = Enum.at(definition.args, 2)
+    [topic_or_event, params, socket] = definition.args
     log_assigns = opts[:log_assigns]
 
     quote do
       %{
         module:          __ENV__.module,
-        function:        unquote(definition.name),
+        function:        "#{unquote(definition.name)}/#{unquote(topic_or_event)}",
         request_headers: Channel.merge_params(unquote(params), unquote(socket), unquote(log_assigns))
       }
     end
