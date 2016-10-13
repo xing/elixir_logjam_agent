@@ -14,6 +14,7 @@ defmodule LogjamAgent.Instrumentation.Socket do
       }
 
       request_id = Metadata.new_request_id!
+      Metadata.current_request_id(request_id)
 
       Buffer.instrument(request_id, env, fn ->
         result      = unquote(Instrumentation.add_exception_guard(definition))

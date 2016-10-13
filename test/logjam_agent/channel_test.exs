@@ -7,6 +7,14 @@ defmodule LogjamAgent.ChannelTest do
     intercept ["test"]
     log_assigns [:user_id, :consumer_key]
 
+    defp assign_request_id(socket) do
+      put_in(
+        socket,
+        [:assigns, :request_id],
+        LogjamAgent.Metadata.current_request_id
+      )
+    end
+
     def join(topic, params, socket)
     def join(_topic, %{reject_join: true}, socket) do
       :timer.sleep(50)
@@ -18,7 +26,7 @@ defmodule LogjamAgent.ChannelTest do
     end
     def join(_topic, params, socket) do
       :timer.sleep(50)
-      {:ok, socket}
+      {:ok, assign_request_id(socket)}
     end
 
     def handle_in(event, params, socket)
@@ -36,7 +44,7 @@ defmodule LogjamAgent.ChannelTest do
     end
     def handle_in(_event, params, socket) do
       :timer.sleep(50)
-      {:noreply, socket}
+      {:noreply, assign_request_id(socket)}
     end
 
     def handle_out(event, params, socket)
@@ -50,7 +58,7 @@ defmodule LogjamAgent.ChannelTest do
     end
     def handle_out(_event, params, socket) do
       :timer.sleep(50)
-      {:noreply, socket}
+      {:noreply, assign_request_id(socket)}
     end
 
     def other(_event, _params, _socket) do
@@ -78,6 +86,12 @@ defmodule LogjamAgent.ChannelTest do
 
     test "works correctly for params that are not a Map" do
       assert {:ok, _socket} = perform_join(params: "")
+    end
+
+    test "request_id is assigned to the process" do
+      refute LogjamAgent.Metadata.current_request_id
+      assert {:ok, socket} = perform_join
+      assert socket.assigns.request_id
     end
 
     test "instrumented actions publish to logjam" do
@@ -139,6 +153,12 @@ defmodule LogjamAgent.ChannelTest do
       assert {:log, %{action: "ChannelTest::TestChannel#handle_in"}} = msg
     end
 
+    test "request_id is assigned to the process" do
+      refute LogjamAgent.Metadata.current_request_id
+      assert {:noreply, socket} = perform_handle_in
+      assert socket.assigns.request_id
+    end
+
     test "successful handle_in invocations are represented as 200 status code" do
       assert {:noreply, _socket} = perform_handle_in
       assert [[msg]] = all_forwarded_log_messages
@@ -190,6 +210,12 @@ defmodule LogjamAgent.ChannelTest do
       assert {:noreply, _socket} = perform_handle_out
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{action: "ChannelTest::TestChannel#handle_out"}} = msg
+    end
+
+    test "request_id is assigned to the process" do
+      refute LogjamAgent.Metadata.current_request_id
+      assert {:noreply, socket} = perform_handle_out
+      assert socket.assigns.request_id
     end
 
     test "successful handle_out invocations are represented as 200 status code" do

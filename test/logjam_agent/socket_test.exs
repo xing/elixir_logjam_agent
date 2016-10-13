@@ -18,7 +18,9 @@ defmodule LogjamAgent.SocketTest do
     def connect(params, socket) do
       :timer.sleep(50)
 
-      {:ok, socket}
+      new = put_in(socket, [:assigns, :request_id], LogjamAgent.Metadata.current_request_id)
+
+      {:ok, new}
     end
 
     def other(_conn, _socket) do
@@ -28,7 +30,7 @@ defmodule LogjamAgent.SocketTest do
 
   def perform_action(opts \\ []) do
     params = Dict.get(opts, :params, %{})
-    socket = Dict.get(opts, :socket, %{})
+    socket = Dict.get(opts, :socket, %{assigns: %{}})
 
     TestSocket.connect(params, socket)
   end
@@ -43,6 +45,11 @@ defmodule LogjamAgent.SocketTest do
     assert {:ok, _socket} = perform_action
     assert [[msg]] = all_forwarded_log_messages
     assert {:log, %{code: 200}} = msg
+  end
+
+  test "request_id is assigned to the process" do
+    assert {:ok, socket} = perform_action
+    assert socket.assigns.request_id
   end
 
   test "failed connects are respresented as 401 status code" do
