@@ -76,6 +76,10 @@ defmodule LogjamAgent.ChannelTest do
       TestChannel.join(topic, params, socket)
     end
 
+    test "works correctly for params that are not a Map" do
+      assert {:ok, _socket} = perform_join(params: "")
+    end
+
     test "instrumented actions publish to logjam" do
       assert {:ok, _socket} = perform_join
       assert [[msg]] = all_forwarded_log_messages

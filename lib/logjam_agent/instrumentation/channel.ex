@@ -33,8 +33,12 @@ defmodule LogjamAgent.Instrumentation.Channel do
     end
   end
 
-  def merge_params(params, socket, log_assigns) do
+  def merge_params(params, socket, log_assigns) when is_map(params) do
     Map.merge(params, Map.take(socket.assigns, log_assigns))
+  end
+
+  def merge_params(_params, socket, log_assigns) do
+    merge_params(%{}, socket, log_assigns)
   end
 
   def result_code(function, result)
