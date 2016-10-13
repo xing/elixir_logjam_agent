@@ -1,4 +1,9 @@
 # Changelog
+
+## 0.5.2
+* Append `topic` or `event` to channel and socket instrumentation send to logjam [#8](https://source.xing.com/hex/logjam_agent/pull/8)
+* Ensure that `request_id` is set in process metadata for channel and socket instrumentation [#7](https://source.xing.com/hex/logjam_agent/pull/7)
+
 ## 0.5.1
 
 * Fix how channels are instrumented so that parameters that are not a Map are handled gracefully
