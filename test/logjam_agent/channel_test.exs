@@ -48,7 +48,7 @@ defmodule LogjamAgent.ChannelTest do
     end
 
     def handle_out(event, params, socket)
-    def handle_out(event, %{stop: true}, socket) do
+    def handle_out("MY_EVENT" <> rest, %{stop: true}, socket) do
       :timer.sleep(50)
       {:stop, :normal, socket}
     end
@@ -225,8 +225,9 @@ defmodule LogjamAgent.ChannelTest do
     end
 
     test "pattern matched params still forward complete params to logjam" do
-      assert {:stop, :normal, _} = perform_handle_out(payload: %{stop: true, foo: :bar})
+      assert {:stop, :normal, _} = perform_handle_out(event: "MY_EVENT1", payload: %{stop: true, foo: :bar})
       assert [[msg]] = all_forwarded_log_messages
+      assert {:log, %{action: "ChannelTest::TestChannel#handle_out/MY_EVENT1"}} = msg
       assert {:log, %{request_info: %{headers: %{stop: true, foo: :bar}}}} = msg
     end
 
