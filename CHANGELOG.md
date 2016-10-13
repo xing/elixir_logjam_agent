@@ -1,4 +1,8 @@
 # Changelog
+## 0.5.1
+
+* Fix how channels are instrumented so that parameters that are not a Map are handled gracefully
+
 ## 0.5.0
 
 * Add support for Phoenix' Channels and Socket [#4](https://source.xing.com/hex/logjam_agent/pull/4)
