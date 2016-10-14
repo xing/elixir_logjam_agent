@@ -3,7 +3,7 @@ defmodule LogjamAgent.Mixfile do
 
   def project do
     [ app: :logjam_agent,
-      version: "0.5.2",
+      version: "0.5.3",
       elixir: "~> 1.3",
       elixirc_paths: ["lib"],
       deps: deps]

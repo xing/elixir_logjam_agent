@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3
+
+* Do not append `topic` or `event` in the case of `Channel.join`
+
 ## 0.5.2
 * Append `topic` or `event` to channel and socket instrumentation send to logjam [#8](https://source.xing.com/hex/logjam_agent/pull/8)
 * Ensure that `request_id` is set in process metadata for channel and socket instrumentation [#7](https://source.xing.com/hex/logjam_agent/pull/7)
