@@ -36,7 +36,7 @@ defmodule LogjamAgent.Instrumentation.Channel do
   end
 
   def build_function_name(name, topic_or_event)
-    when name in @add_topic_or_event_to_function,  do: "#{name}/#{topic_or_event}"
+    when name in @add_topic_or_event_to_function, do: "#{name}/#{topic_or_event}"
 
   def build_function_name(name, _topic_or_event), do: to_string(name)
 
