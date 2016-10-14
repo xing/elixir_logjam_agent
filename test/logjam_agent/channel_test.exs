@@ -97,7 +97,7 @@ defmodule LogjamAgent.ChannelTest do
     test "instrumented actions publish to logjam" do
       assert {:ok, _socket} = perform_join
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{action: "ChannelTest::TestChannel#join/THE_TOPIC"}} = msg
+      assert {:log, %{action: "ChannelTest::TestChannel#join"}} = msg
     end
 
     test "successful joins are represented as 200 status code" do

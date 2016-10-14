@@ -3,6 +3,8 @@ defmodule LogjamAgent.Instrumentation.Channel do
   alias __MODULE__
   require Logger
 
+  @add_topic_or_event_to_function [:handle_in, :handle_out]
+
   def instrument(definition, opts) do
     socket = Enum.at(definition.args, 2)
 
@@ -22,16 +24,21 @@ defmodule LogjamAgent.Instrumentation.Channel do
 
   def encode_env(definition, opts) do
     [topic_or_event, params, socket] = definition.args
-    log_assigns = opts[:log_assigns]
+    log_assigns                      = opts[:log_assigns]
 
     quote do
       %{
         module:          __ENV__.module,
-        function:        "#{unquote(definition.name)}/#{unquote(topic_or_event)}",
+        function:        Channel.build_function_name(unquote(definition.name), unquote(topic_or_event)),
         request_headers: Channel.merge_params(unquote(params), unquote(socket), unquote(log_assigns))
       }
     end
   end
+
+  def build_function_name(name, topic_or_event)
+    when name in @add_topic_or_event_to_function,  do: "#{name}/#{topic_or_event}"
+
+  def build_function_name(name, _topic_or_event), do: to_string(name)
 
   def merge_params(params, socket, log_assigns) when is_map(params) do
     Map.merge(params, Map.take(socket.assigns, log_assigns))
