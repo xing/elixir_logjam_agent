@@ -108,7 +108,7 @@ defmodule LogjamAgent.Transformer do
   end
 
   def add_request_info(output, input) do
-    req_headers = Dict.get(input, :request_headers, []) |> to_map
+    req_headers = Dict.get(input, :request_headers, []) |> to_string_map
     query_string = Dict.get(input, :query_string, "")
 
     output
@@ -121,8 +121,16 @@ defmodule LogjamAgent.Transformer do
        })
   end
 
-  defp to_map(%{__struct__: _} = input), do: Map.delete(input, :__struct__)
-  defp to_map(input), do: Enum.into(input, %{})
+  defp to_string_map(input)
+  defp to_string_map(%{__struct__: _} = input) do
+    input
+      |> Map.delete(:__struct__)
+      |> to_string_map
+  end
+
+  defp to_string_map(input) do
+    Enum.into(input, %{}, fn{k,v} -> {to_string(k), to_string(v)} end)
+  end
 
   defp to_logjam_log_level(log) do
     @logjam_severities[log.level]

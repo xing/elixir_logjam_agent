@@ -115,7 +115,7 @@ defmodule LogjamAgent.ChannelTest do
     test "pattern matched params still forward complete params to logjam" do
       assert {:error, %{}} = perform_join(params: %{reject_join: true, foo: :bar})
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{request_info: %{headers: %{reject_join: true, foo: :bar}}}} = msg
+      assert {:log, %{request_info: %{headers: %{"reject_join" => "true", "foo" => "bar"}}}} = msg
     end
 
     test "fatally failed joins are represented as 500 status code" do
@@ -134,7 +134,7 @@ defmodule LogjamAgent.ChannelTest do
       assert {:ok, _socket} = perform_join(socket: %{assigns: assigns})
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{request_info: %{headers: headers}}} = msg
-      assert %{user_id: "USER_ID", consumer_key: "CONSUMER_KEY"} = headers
+      assert %{"user_id" => "USER_ID", "consumer_key" => "CONSUMER_KEY"} = headers
     end
   end
 
@@ -174,7 +174,7 @@ defmodule LogjamAgent.ChannelTest do
     test "pattern matched params still forward complete params to logjam" do
       assert {:reply, _, _} = perform_handle_in(payload: %{reply: true, foo: :bar})
       assert [[msg]] = all_forwarded_log_messages
-      assert {:log, %{request_info: %{headers: %{reply: true, foo: :bar}}}} = msg
+      assert {:log, %{request_info: %{headers: %{"reply" => "true", "foo" => "bar"}}}} = msg
     end
 
     test "fatally failed handle_in invocations are represented as 500 status code" do
@@ -193,7 +193,7 @@ defmodule LogjamAgent.ChannelTest do
       assert {:noreply, _socket} = perform_handle_in(socket: %{assigns: assigns})
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{request_info: %{headers: headers}}} = msg
-      assert %{user_id: "USER_ID", consumer_key: "CONSUMER_KEY"} = headers
+      assert %{"user_id" => "USER_ID", "consumer_key" => "CONSUMER_KEY"} = headers
     end
   end
 
@@ -228,7 +228,7 @@ defmodule LogjamAgent.ChannelTest do
       assert {:stop, :normal, _} = perform_handle_out(event: "MY_EVENT1", payload: %{stop: true, foo: :bar})
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{action: "ChannelTest::TestChannel#handle_out/MY_EVENT1"}} = msg
-      assert {:log, %{request_info: %{headers: %{stop: true, foo: :bar}}}} = msg
+      assert {:log, %{request_info: %{headers: %{"stop" => "true", "foo" => "bar"}}}} = msg
     end
 
     test "fatally failed handle_out invocations are represented as 500 status code" do
@@ -247,7 +247,7 @@ defmodule LogjamAgent.ChannelTest do
       assert {:noreply, _socket} = perform_handle_out(socket: %{assigns: assigns})
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{request_info: %{headers: headers}}} = msg
-      assert %{user_id: "USER_ID", consumer_key: "CONSUMER_KEY"} = headers
+      assert %{"user_id" => "USER_ID", "consumer_key" => "CONSUMER_KEY"} = headers
     end
   end
 end
