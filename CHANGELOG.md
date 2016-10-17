@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.4
+* Make sure that `request_headers` map sent to logjam is always a map from string to string
+
 ## 0.5.3
 
 * Do not append `topic` or `event` in the case of `Channel.join`
