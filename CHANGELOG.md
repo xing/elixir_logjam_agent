@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.5
+* Defer stringification of nested maps in request_headers to JSON encoder
+
 ## 0.5.4
 * Make sure that `request_headers` map sent to logjam is always a map from string to string
 
