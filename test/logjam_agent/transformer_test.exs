@@ -13,6 +13,12 @@ defmodule LogjamAgent.TransformerTest do
     defstruct [:id]
   end
 
+  test "#to_logjam_msg defers stringification of nested maps to JSON", data do
+    data = Map.put(data, :request_headers, %{origin: %{urn: "user:1"}})
+    result = T.to_logjam_msg(data)
+    assert result[:request_info][:headers] == %{"origin" => %{urn: "user:1"}}
+  end
+
   test "#to_logjam_msg can handle structs as request_headers", data do
     data = Map.put(data, :request_headers, %TestStruct{id: 1})
     result = T.to_logjam_msg(data)

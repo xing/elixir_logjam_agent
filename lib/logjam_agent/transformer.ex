@@ -129,8 +129,12 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp to_string_map(input) do
-    Enum.into(input, %{}, fn{k,v} -> {to_string(k), to_string(v)} end)
+    Enum.into(input, %{}, fn{k,v} -> {to_string(k), stringify(v)} end)
   end
+
+  defp stringify(value)
+  defp stringify(value) when is_map(value), do: value
+  defp stringify(value), do: to_string(value)
 
   defp to_logjam_log_level(log) do
     @logjam_severities[log.level]
