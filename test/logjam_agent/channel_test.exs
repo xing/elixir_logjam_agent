@@ -84,6 +84,12 @@ defmodule LogjamAgent.ChannelTest do
       TestChannel.join(topic, params, socket)
     end
 
+    test "clears request_id after join" do
+      refute LogjamAgent.Metadata.current_request_id
+      assert {:ok, _socket} = perform_join
+      refute LogjamAgent.Metadata.current_request_id
+    end
+
     test "works correctly for params that are not a Map" do
       assert {:ok, _socket} = perform_join(params: "")
     end

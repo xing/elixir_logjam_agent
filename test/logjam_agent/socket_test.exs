@@ -35,6 +35,12 @@ defmodule LogjamAgent.SocketTest do
     TestSocket.connect(params, socket)
   end
 
+  test "clears request_id after connect" do
+    refute LogjamAgent.Metadata.current_request_id
+    assert {:ok, _socket} = perform_action
+    refute LogjamAgent.Metadata.current_request_id
+  end
+
   test "instrumented actions publish to logjam" do
     assert {:ok, _socket} = perform_action
     assert [[msg]] = all_forwarded_log_messages

@@ -16,12 +16,15 @@ defmodule LogjamAgent.Instrumentation.Socket do
       request_id = Metadata.new_request_id!
       Metadata.current_request_id(request_id)
 
-      Buffer.instrument(request_id, env, fn ->
+      result = Buffer.instrument(request_id, env, fn ->
         result      = unquote(Instrumentation.add_exception_guard(definition))
         result_code = Socket.result_code(result)
         Buffer.store(request_id, code: result_code, response_send_at: :os.timestamp)
         Socket.result(result)
       end)
+
+      Logger.reset_metadata
+      result
     end
   end
 
