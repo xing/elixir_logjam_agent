@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.6
+* Fix memory leak that caused dangling log messages in `LogjamAgent.Buffer` for channel and socket messages.
+
 ## 0.5.5
 * Defer stringification of nested maps in request_headers to JSON encoder
 
