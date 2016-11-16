@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.7
+* Add CI build scripts
+
 ## 0.5.6
 * Fix memory leak that caused dangling log messages in `LogjamAgent.Buffer` for channel and socket messages.
 
