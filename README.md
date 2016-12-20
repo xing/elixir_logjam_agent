@@ -119,6 +119,26 @@ config :logjam_agent, :instrumentation,
        except: [show: 1]
 ```
 
+### Ecto integration
+
+To track how much time is spent on database actions, you only need to add another logger
+for Ecto:
+
+```elixir
+# config/config.exs
+
+config :your_app, YourApp.Repo,
+  loggers: [
+    {Ecto.LogEntry, :log, []},        # default
+    {LogjamAgent.TimerEcto, :log, []} # extract timing information
+  ]
+```
+
+The former logger is the default entry if you do not specify `loggers` at all. It writes a
+text version with `:debug` level to your logger backends. If your log level is higher than
+that, this logger will be essentially a no-op. The latter one extracts the execution times
+and makes them visible in LogJam.
+
 # Note on Patches/Pull Requests ###
 * Fork the project on Github.
 * Make your feature addition or bug fix.

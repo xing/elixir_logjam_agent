@@ -12,6 +12,7 @@ defmodule LogjamAgent.Metadata do
 
   def store(dict), do: Buffer.store(current_request_id, dict)
   def fetch(field), do: Buffer.fetch(current_request_id, field)
+  def delete(field), do: Buffer.delete(current_request_id, field)
   def update(field, inital, fun), do: Buffer.update(current_request_id, field, inital, fun)
 
   def current_caller_id do
