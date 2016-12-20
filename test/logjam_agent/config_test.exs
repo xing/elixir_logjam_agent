@@ -3,6 +3,9 @@ defmodule LogjamAgent.ConfigTest do
 
   setup do
     System.put_env("LOGJAM_BROKER", "")
+
+    on_exit(fn -> System.put_env("LOGJAM_BROKER", "") end)
+
     :ok
   end
 
