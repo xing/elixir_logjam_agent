@@ -3,17 +3,20 @@ defmodule LogjamAgent.Instrumentation.Action do
     [conn | _] = definition.args
 
     quote do
+      module = __ENV__.module
+      action = unquote(definition.name)
+      action_name = LogjamAgent.Transformer.logjam_action_name(module, action)
       env  = %{
-        module:          __ENV__.module,
-        function:        unquote(definition.name),
+        module:          module,
+        function:        action,
         request_headers: unquote(conn).req_headers,
         query_string:    unquote(conn).query_string,
-        method:          unquote(conn).method
+        method:          unquote(conn).method,
+        override_action: action_name
       }
 
-      Kernel.var!(unquote(conn)) = Plug.Conn.put_resp_header(unquote(conn),
-                                                             "x-logjam-request-action",
-                                                             LogjamAgent.Transformer.logjam_action_name(env.module, env.function))
+      LogjamAgent.Metadata.store(action: action_name)
+      Kernel.var!(unquote(conn)) = Plug.Conn.put_resp_header(unquote(conn), "x-logjam-request-action", action_name)
 
       LogjamAgent.Buffer.instrument(
         LogjamAgent.Metadata.current_request_id,

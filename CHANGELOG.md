@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.8
+* Store action name in Metadata to make it available in controllers
+
 ## 0.5.7
 * Add CI build scripts
 

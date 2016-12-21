@@ -15,6 +15,8 @@ defmodule LogjamAgent.ActionTest do
 
       :excluded_by_default
     end
+
+    def action_returning_conn(conn), do: conn
   end
 
   defmodule TestMod do
@@ -55,6 +57,13 @@ defmodule LogjamAgent.ActionTest do
 
       assert [[msg]] = all_forwarded_log_messages
       assert {:log, %{action: "ActionTest::TestModWithoutOptions#some_action"}} = msg
+    end
+
+    test "instrumented action is set in the header and stored in Metadata" do
+      conn = TestModWithoutOptions.action_returning_conn(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
+
+      assert Plug.Conn.get_resp_header(conn, "x-logjam-request-action") == ["ActionTest::TestModWithoutOptions#action_returning_conn"]
+      assert LogjamAgent.Metadata.fetch(:action) == "ActionTest::TestModWithoutOptions#action_returning_conn"
     end
 
     test "action/2 is globally excluded" do
