@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.9
+* reports logs for halted controller actions as well. __This patch changes how you need to integrate the Logjam Agent into your app:__
+  * in `web/router.ex`, you need to rename `LogjamAgent.Plug` → `LogjamAgent.Plug.Register`
+  * in `lib/yourapp/endpoint.ex`, you need to add `plug LogjamAgent.Plug.Finalize` as described in the [README.md](README.md)
+
 ## 0.5.8
 * Store action name in Metadata to make it available in controllers
 
