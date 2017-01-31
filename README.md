@@ -73,12 +73,19 @@ end
 
 `Phoenix` also needs some minor changes.
 
-In your `web/router.ex` file use `LogjamAgent.Plug` in the appropriate pipeline
+In your `lib/yourapp/endpoint.ex` add `LogjamAgent.Plug.Finalize` before `Logger.Plug`:
+``` elixir
+  plug Plug.RequestId
+  plug LogjamAgent.Plug.Finalize
+  plug Plug.Logger
+```
+
+In your `web/router.ex` file use `LogjamAgent.Plug.Register` in the appropriate pipeline
 
 ``` elixir
 defmodule RestProxy.Router do
   pipeline :browser do
-    plug LogjamAgent.Plug
+    plug LogjamAgent.Plug.Register
     # ...
   end
 end

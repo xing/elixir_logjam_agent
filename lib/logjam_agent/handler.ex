@@ -22,7 +22,7 @@ defmodule LogjamAgent.Handler do
         env        = create_env(msg)
 
         Metadata.current_request_id(request_id)
-        Buffer.start_request(request_id, env)
+        Buffer.store(request_id, env)
 
         log_start(msg)
 
@@ -70,9 +70,10 @@ defmodule LogjamAgent.Handler do
       }
       defp create_env(message) do
         Map.merge(@module_info, %{
-          request_headers: message.headers,
-          query_string:    "",
-          method:          nil
+          action_started_at: :os.timestamp,
+          request_headers:   message.headers,
+          query_string:      "",
+          method:            nil
         })
       end
 

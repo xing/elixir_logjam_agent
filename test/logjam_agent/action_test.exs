@@ -47,6 +47,48 @@ defmodule LogjamAgent.ActionTest do
     end
   end
 
+  defmodule TestRoutedController do
+    use Phoenix.Controller
+    use LogjamAgent.Action
+
+    def normal_action(conn, _param) do
+      :timer.sleep(50)
+
+      conn |> text("ok")
+    end
+
+    def raising_action(conn, _params) do
+      1 = 2
+    end
+
+    plug :halting_plug when action == :halted_action
+    def halted_action(conn, _param) do
+      conn # :halted
+    end
+
+    defp halting_plug(conn, _param) do
+      conn
+      |> text("going to halt!")
+      |> halt
+    end
+  end
+
+  defmodule TestRouter do
+    use Phoenix.Router
+
+    pipeline :logjam do
+      plug LogjamAgent.Plug.Finalize
+      plug LogjamAgent.Plug.Register
+    end
+
+    scope "/" do
+      pipe_through :logjam
+      get "/halted", TestRoutedController, :halted_action
+      get "/normal", TestRoutedController, :normal_action
+      get "/raising", TestRoutedController, :raising_action
+    end
+  end
+
   describe "when no options are specified" do
     test "instrumented actions retain their functionality" do
       assert :instrumented = TestModWithoutOptions.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
@@ -104,7 +146,7 @@ defmodule LogjamAgent.ActionTest do
       assert [[]] = all_forwarded_log_messages
     end
 
-      test "uninstrumented actions retain their functionality" do
+    test "uninstrumented actions retain their functionality" do
       assert :excluded = TestMod.excluded_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
     end
 
@@ -112,6 +154,36 @@ defmodule LogjamAgent.ActionTest do
       TestMod.excluded_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
       assert [[]] = all_forwarded_log_messages
+    end
+  end
+
+  describe "full stack test, including plugins" do
+    test "halting action publishes to logjam" do
+      %Plug.Conn{}
+      |> Plug.Adapters.Test.Conn.conn("get", "/halted", nil)
+      |> TestRouter.call(TestRouter.init([]))
+
+      assert [[msg]] = all_forwarded_log_messages
+      assert {:log, %{action: "ActionTest::TestRoutedController#halted_action"}} = msg
+    end
+
+    test "normal action publishes to logjam" do
+      %Plug.Conn{}
+      |> Plug.Adapters.Test.Conn.conn("get", "/normal", nil)
+      |> TestRouter.call(TestRouter.init([]))
+
+      assert [[msg]] = all_forwarded_log_messages
+      assert {:log, %{action: "ActionTest::TestRoutedController#normal_action"}} = msg
+    end
+
+    test "action raising exception publishes to logjam" do
+      assert_raise(Plug.Conn.WrapperError, fn ->
+        %Plug.Conn{}
+        |> Plug.Adapters.Test.Conn.conn("get", "/raising", nil)
+        |> TestRouter.call(TestRouter.init([]))
+      end)
+        assert [[msg]] = all_forwarded_log_messages
+        assert {:log, %{action: "ActionTest::TestRoutedController#raising_action"}} = msg
     end
   end
 end

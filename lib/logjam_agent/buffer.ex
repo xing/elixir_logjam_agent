@@ -8,7 +8,7 @@ defmodule LogjamAgent.Buffer do
   end
 
   def instrument(request_id, env, action) do
-    start_request(request_id, env)
+    store_if_missing(request_id, Dict.put(env, :action_started_at, :os.timestamp))
 
     result = try do
       action.()
@@ -18,10 +18,6 @@ defmodule LogjamAgent.Buffer do
       finish_request(request_id)
     end
     result
-  end
-
-  def start_request(request_id, env) do
-    store(request_id, Dict.merge(env, action_started_at: :os.timestamp))
   end
 
   def finish_request(request_id) do
@@ -41,9 +37,12 @@ defmodule LogjamAgent.Buffer do
       {state[request_id], Dict.delete(state, request_id)}
     end)
 
-    buffer
-    |> Transformer.to_logjam_msg
-    |> Forwarders.forward
+    if(buffer) do
+      buffer
+      |> Enum.into(%{})
+      |> Transformer.to_logjam_msg
+      |> Forwarders.forward
+    end
   end
 
   def log(level, msg, timestamp, %{logjam_request_id: request_id, pid: pid}) do
@@ -67,6 +66,10 @@ defmodule LogjamAgent.Buffer do
 
   def store(request_id, dict) do
     update_buffer(request_id, &Dict.merge(&1, dict))
+  end
+
+  def store_if_missing(request_id, dict) do
+    update_buffer(request_id, &Dict.merge(dict, &1))
   end
 
   def update(request_id, key, initial, fun) do

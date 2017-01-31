@@ -22,4 +22,12 @@ defmodule LogjamAgent.BufferTest do
 
     assert 2 = Buffer.fetch(:test_request_id, :test_field)
   end
+
+  test "store_if_missing/2 does not overwrite existing value" do
+    Buffer.store_if_missing(:test_request_id, foo: "foo")
+    Buffer.store_if_missing(:test_request_id, foo: "bar", baz: 1)
+
+    assert "foo" = Buffer.fetch(:test_request_id, :foo)
+    assert 1 = Buffer.fetch(:test_request_id, :baz)
+  end
 end
