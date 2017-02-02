@@ -84,7 +84,7 @@ defmodule LogjamAgent.HandlerTest do
 
       assert [[log: logjam_msg]] = all_forwarded_log_messages
       assert is_binary(logjam_msg.request_id)
-      assert Regex.match?(~r/^[\w\d]{32}$/, logjam_msg.request_id)
+      assert Regex.match?(~r/^logjam_agent-test-[\w\d]{32}$/, logjam_msg.request_id)
     end
 
     test "if processed twice, has different request_id" do
