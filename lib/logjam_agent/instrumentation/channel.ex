@@ -16,7 +16,7 @@ defmodule LogjamAgent.Instrumentation.Channel do
       result = Buffer.instrument(request_id, env, fn ->
         result      = unquote(Instrumentation.add_exception_guard(definition))
         result_code = Channel.result_code(unquote(definition.name), result)
-        Buffer.store(request_id, code: result_code, response_send_at: :os.timestamp)
+        Buffer.store(request_id, %{code: result_code, response_send_at: :os.timestamp})
         Channel.result(unquote(definition.name), result, unquote(socket))
       end)
 

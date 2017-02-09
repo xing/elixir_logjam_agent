@@ -5,13 +5,14 @@ defmodule LogjamAgent.Metadata do
     rid = UUID.uuid4(:hex)
     id = "#{Config.current.app_name}-#{logjam_env}-#{rid}"
     current_request_id(id)
+    Buffer.create(id)
     id
   end
 
   def current_request_id, do: Logger.metadata[:logjam_request_id]
   def current_request_id(id), do: Logger.metadata(logjam_request_id: id)
 
-  def store(dict), do: Buffer.store(current_request_id, dict)
+  def store(map), do: Buffer.store(current_request_id, map)
   def fetch(field), do: Buffer.fetch(current_request_id, field)
   def delete(field), do: Buffer.delete(current_request_id, field)
   def update(field, inital, fun), do: Buffer.update(current_request_id, field, inital, fun)

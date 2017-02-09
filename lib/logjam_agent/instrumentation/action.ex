@@ -11,11 +11,10 @@ defmodule LogjamAgent.Instrumentation.Action do
         function:        action,
         request_headers: unquote(conn).req_headers,
         query_string:    unquote(conn).query_string,
-        method:          unquote(conn).method,
-        override_action: action_name
+        method:          unquote(conn).method
       }
 
-      LogjamAgent.Metadata.store(action: action_name)
+      LogjamAgent.Metadata.store(%{action: action_name})
       Kernel.var!(unquote(conn)) = Plug.Conn.put_resp_header(unquote(conn), "x-logjam-request-action", action_name)
 
       LogjamAgent.Buffer.instrument(

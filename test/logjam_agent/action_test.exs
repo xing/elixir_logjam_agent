@@ -51,6 +51,8 @@ defmodule LogjamAgent.ActionTest do
     use Phoenix.Controller
     use LogjamAgent.Action
 
+    require Logger
+
     def normal_action(conn, _param) do
       :timer.sleep(50)
 
@@ -63,10 +65,12 @@ defmodule LogjamAgent.ActionTest do
 
     plug :halting_plug when action == :halted_action
     def halted_action(conn, _param) do
+      Logger.debug "debug:action:halt"
       conn # :halted
     end
 
     defp halting_plug(conn, _param) do
+      Logger.debug "debug:plug:halt"
       conn
       |> text("going to halt!")
       |> halt
@@ -90,6 +94,11 @@ defmodule LogjamAgent.ActionTest do
   end
 
   describe "when no options are specified" do
+    setup do
+      LogjamAgent.Metadata.new_request_id!
+      :ok
+    end
+
     test "instrumented actions retain their functionality" do
       assert :instrumented = TestModWithoutOptions.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
     end
@@ -116,6 +125,11 @@ defmodule LogjamAgent.ActionTest do
   end
 
   describe "when :except option is specified" do
+    setup do
+      LogjamAgent.Metadata.new_request_id!
+      :ok
+    end
+
     test "instrumented actions retain their functionality" do
       assert :instrumented = TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
     end
@@ -164,7 +178,11 @@ defmodule LogjamAgent.ActionTest do
       |> TestRouter.call(TestRouter.init([]))
 
       assert [[msg]] = all_forwarded_log_messages
+      assert all_log_messages_forwarded?
       assert {:log, %{action: "ActionTest::TestRoutedController#halted_action"}} = msg
+
+      {:log, %{lines: [[0, _date, line0]]}} = msg
+      assert String.contains?(line0, "debug:plug:halt")
     end
 
     test "normal action publishes to logjam" do
@@ -173,6 +191,7 @@ defmodule LogjamAgent.ActionTest do
       |> TestRouter.call(TestRouter.init([]))
 
       assert [[msg]] = all_forwarded_log_messages
+      assert all_log_messages_forwarded?
       assert {:log, %{action: "ActionTest::TestRoutedController#normal_action"}} = msg
     end
 
@@ -182,8 +201,10 @@ defmodule LogjamAgent.ActionTest do
         |> Plug.Adapters.Test.Conn.conn("get", "/raising", nil)
         |> TestRouter.call(TestRouter.init([]))
       end)
-        assert [[msg]] = all_forwarded_log_messages
-        assert {:log, %{action: "ActionTest::TestRoutedController#raising_action"}} = msg
+
+      assert [[msg]] = all_forwarded_log_messages
+      assert all_log_messages_forwarded?
+      assert {:log, %{action: "ActionTest::TestRoutedController#raising_action"}} = msg
     end
   end
 end

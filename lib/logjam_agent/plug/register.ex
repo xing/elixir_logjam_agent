@@ -19,7 +19,7 @@ defmodule LogjamAgent.Plug.Register do
     Buffer.store_if_missing(logjam_request_id, env)
 
     Conn.register_before_send(conn, fn conn ->
-      Metadata.store(code: conn.status, response_send_at: :os.timestamp)
+      Metadata.store(%{code: conn.status, response_send_at: :os.timestamp})
       conn
         |> maybe_add_logjam_metadata(logjam_request_id)
         |> Conn.put_resp_header("x-logjam-request-id", logjam_request_id)
@@ -32,7 +32,7 @@ defmodule LogjamAgent.Plug.Register do
       module = Controller.controller_module(conn)
       action = Controller.action_name(conn)
       action_name = LogjamAgent.Transformer.logjam_action_name(module, action)
-      Buffer.store_if_missing(logjam_request_id, module: module, function: action, override_action: action_name)
+      Buffer.store_if_missing(logjam_request_id, %{module: module, function: action})
       Conn.put_resp_header(conn, "x-logjam-request-action", action_name)
       conn
     rescue

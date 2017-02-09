@@ -2,32 +2,36 @@ defmodule LogjamAgent.BufferTest do
   use ExUnit.Case, async: false
   alias LogjamAgent.Buffer
 
-  setup do
-    Buffer.delete(:test_request_id, :test_field)
-    :ok
+  test "create/1 refuses to create entry when already present", %{test: test} do
+    assert Buffer.create(test)
+    assert_raise ArgumentError, fn -> Buffer.create(test) end
   end
 
-  test "update/4 stores inital value when no value is present" do
-    refute Buffer.fetch(:test_request_id, :field)
-    assert :ok = Buffer.update(:test_request_id, :test_field, 0, &(&1 + 1))
-    assert 0 = Buffer.fetch(:test_request_id, :test_field)
+  test "update/4 is a no-op when no value is present", %{test: test} do
+    refute Buffer.fetch(test, :test_field)
+    assert :ok = Buffer.update(test, :test_field, 0, &(&1 + 1))
+    refute Buffer.fetch(test, :test_field)
   end
 
-  test "update/4 evaluates updater when value is present" do
-    refute Buffer.fetch(:test_request_id, :test_field)
+  test "update/4 evaluates updater when value is present", %{test: test} do
+    Buffer.create(test)
+
+    refute Buffer.fetch(test, :test_field)
 
     for _i <- 1..3 do
-      assert :ok = Buffer.update(:test_request_id, :test_field, 0, &(&1 + 1))
+      assert :ok = Buffer.update(test, :test_field, 0, &(&1 + 1))
     end
 
-    assert 2 = Buffer.fetch(:test_request_id, :test_field)
+    assert 2 = Buffer.fetch(test, :test_field)
   end
 
-  test "store_if_missing/2 does not overwrite existing value" do
-    Buffer.store_if_missing(:test_request_id, foo: "foo")
-    Buffer.store_if_missing(:test_request_id, foo: "bar", baz: 1)
+  test "store_if_missing/2 does not overwrite existing value", %{test: test} do
+    Buffer.create(test)
 
-    assert "foo" = Buffer.fetch(:test_request_id, :foo)
-    assert 1 = Buffer.fetch(:test_request_id, :baz)
+    Buffer.store_if_missing(test, %{foo: "foo"})
+    Buffer.store_if_missing(test, %{foo: "bar", baz: 1})
+
+    assert "foo" = Buffer.fetch(test, :foo)
+    assert 1 = Buffer.fetch(test, :baz)
   end
 end

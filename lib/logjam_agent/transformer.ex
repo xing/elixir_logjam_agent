@@ -61,21 +61,24 @@ defmodule LogjamAgent.Transformer do
     in_iso = :calendar.now_to_local_time(input.action_started_at)
              |> to_logjam_iso8601
 
-    Dict.put(output, :started_at, in_iso)
+    Map.put(output, :started_at, in_iso)
   end
 
   defp add_logjam_total_time(output, input) do
-    first_response = Dict.get(input, :response_send_at, input[:action_finished_at])
+    first_response = Map.get(input, :response_send_at, input[:action_finished_at])
     total_time = :timer.now_diff(first_response, input.action_started_at) |> div(1000)
-    Dict.put(output, :total_time, total_time)
+    Map.put(output, :total_time, total_time)
   end
 
   defp add_logjam_action(output, input) do
-    action = case Dict.fetch(input, :override_action) do
+    action = case Map.fetch(input, :override_action) do
       {:ok, value} -> value
-      :error       -> logjam_action_name(input.module, input.function)
+      :error       ->
+        module = Map.get(input, :module, :Unknown)
+        function = Map.get(input, :function, :unknown)
+        logjam_action_name(module, function)
     end
-    Dict.put(output, :action, action)
+    Map.put(output, :action, action)
   end
 
   defp add_logjam_severity(output, input) do
@@ -83,7 +86,7 @@ defmodule LogjamAgent.Transformer do
       []       -> %{level: :info}
       messages -> Enum.max_by(messages, &to_logjam_log_level/1)
     end
-    Dict.put(output, :severity, to_logjam_log_level(winner))
+    Map.put(output, :severity, to_logjam_log_level(winner))
   end
 
   defp add_logjam_lines(output, input) do
@@ -95,26 +98,26 @@ defmodule LogjamAgent.Transformer do
       ]
     end)
 
-    Dict.put(output, :lines, lines)
+    Map.put(output, :lines, lines)
   end
 
   defp add_system_info(output) do
     output
-    |> Dict.merge(LogjamAgent.SystemMetrics.get)
+    |> Map.merge(LogjamAgent.SystemMetrics.get)
   end
 
   defp copy_fields(output, input) do
-    Dict.merge(output, Dict.take(input, @fields_to_copy))
+    Map.merge(output, Map.take(input, @fields_to_copy))
   end
 
   def add_request_info(output, input) do
-    req_headers = Dict.get(input, :request_headers, []) |> to_string_map
-    query_string = Dict.get(input, :query_string, "")
+    req_headers = Map.get(input, :request_headers, []) |> to_string_map
+    query_string = Map.get(input, :query_string, "")
 
     output
-    |> Dict.put(:caller_id, req_headers["x-logjam-caller-id"])
-    |> Dict.put(:caller_action, req_headers["x-logjam-action"])
-    |> Dict.put(:request_info, %{
+    |> Map.put(:caller_id, req_headers["x-logjam-caller-id"])
+    |> Map.put(:caller_action, req_headers["x-logjam-action"])
+    |> Map.put(:request_info, %{
         query_parameters: Plug.Conn.Query.decode(query_string),
         headers: req_headers,
         method:  input[:method]

@@ -33,7 +33,7 @@ defmodule LogjamAgent.Handler do
       def completed(%{assigns: %{request_id: request_id}}, result) do
         status = if ResultCode.exception?(result), do: :internal_server_error, else: :ok
         log_completion(request_id, status)
-        Buffer.finish_request(request_id)
+        Buffer.finish_request(request_id, __MODULE__)
       end
 
       @logjam_action_name Transformer.logjam_action_name(__ENV__.module, :process)
@@ -60,7 +60,7 @@ defmodule LogjamAgent.Handler do
 
       defp log_completion(request_id, status) do
         status_code = Plug.Conn.Status.code(status)
-        Buffer.store(request_id, code: status_code)
+        Buffer.store(request_id, %{code: status_code})
         Logger.info("Completed #{status_code} #{status}")
       end
 

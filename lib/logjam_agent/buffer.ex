@@ -8,21 +8,21 @@ defmodule LogjamAgent.Buffer do
   end
 
   def instrument(request_id, env, action) do
-    store_if_missing(request_id, Dict.put(env, :action_started_at, :os.timestamp))
+    store_if_missing(request_id, Map.put(env, :action_started_at, :os.timestamp))
 
     result = try do
       action.()
     catch
       kind, reason -> log_error_and_reraise(kind, reason, System.stacktrace, %{logjam_request_id: request_id, pid: self})
     after
-      finish_request(request_id)
+      finish_request(request_id, __MODULE__)
     end
     result
   end
 
-  def finish_request(request_id) do
-    store(request_id, action_finished_at: :os.timestamp)
-    Logger.log(:warn, '<Logjam Syncpoint>', logjam_request_id: request_id, logjam_signal: :finished)
+  def finish_request(request_id, source) do
+    store(request_id, %{action_finished_at: :os.timestamp})
+    Logger.log(:warn, "<Logjam Syncpoint from #{source}>", logjam_request_id: request_id, logjam_signal: :finished)
   end
 
   defp log_error_and_reraise(kind, reason, stack, meta) do
@@ -64,31 +64,45 @@ defmodule LogjamAgent.Buffer do
     Agent.get(__MODULE__, fn(state) -> Dict.get(state, request_id)[key] end)
   end
 
-  def store(request_id, dict) do
-    update_buffer(request_id, &Dict.merge(&1, dict))
+  def create(request_id) do
+    result = Agent.get_and_update(__MODULE__, fn(state) ->
+      if Dict.has_key?(state, request_id) do
+        {:already_exists, state}
+      else
+        {:ok, Dict.put(state, request_id, %{request_id: request_id, log_messages: []})}
+      end
+    end)
+
+    case result do
+      :already_exists -> raise ArgumentError, "#{request_id} is already present, cannot create again"
+      :ok -> :ok
+    end
   end
 
-  def store_if_missing(request_id, dict) do
-    update_buffer(request_id, &Dict.merge(dict, &1))
+  def store(request_id, map) when is_map(map) do
+    update_buffer(request_id, &Map.merge(&1, map))
+  end
+
+  def store_if_missing(request_id, map) when is_map(map) do
+    update_buffer(request_id, &Map.merge(map, &1))
   end
 
   def update(request_id, key, initial, fun) do
-    update_buffer(request_id, &Dict.update(&1, key, initial, fun))
+    update_buffer(request_id, &Map.update(&1, key, initial, fun))
   end
 
   def delete(request_id, key) do
-    update_buffer(request_id, &Dict.delete(&1, key))
+    update_buffer(request_id, &Map.delete(&1, key))
   end
 
   defp update_buffer(request_id, updater) do
     Agent.update(__MODULE__, fn(state) ->
-      d = if Dict.has_key?(state, request_id) do
-        state
+      if Dict.has_key?(state, request_id) do
+        Dict.update!(state, request_id, updater)
       else
-        Dict.put(state, request_id, %{request_id: request_id, log_messages: []})
+        state
       end
 
-      Dict.update!(d, request_id, updater)
     end)
   end
 end
