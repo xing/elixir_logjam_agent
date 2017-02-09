@@ -1,6 +1,15 @@
 # Changelog
 
+## 0.5.10
+
+* fix breakage and memory leaks introduced in 0.5.9 (#18)
+* adds app_name and environment to request_id (#17)
+* the API changes mentioned in 0.5.9 still need to be applied
+
 ## 0.5.9
+
+**Broken, do not use**
+
 * reports logs for halted controller actions as well. __This patch changes how you need to integrate the Logjam Agent into your app:__
   * in `web/router.ex`, you need to rename `LogjamAgent.Plug` → `LogjamAgent.Plug.Register`
   * in `lib/yourapp/endpoint.ex`, you need to add `plug LogjamAgent.Plug.Finalize` as described in the [README.md](README.md)
