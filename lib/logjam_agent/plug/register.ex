@@ -22,7 +22,7 @@ defmodule LogjamAgent.Plug.Register do
       Metadata.store(%{code: conn.status, response_send_at: :os.timestamp})
       conn
         |> maybe_add_logjam_metadata(logjam_request_id)
-        |> Conn.put_resp_header("x-logjam-request-id", logjam_request_id)
+        |> Conn.put_resp_header("x-logjam-request-id", Metadata.current_caller_id)
     end)
   end
 

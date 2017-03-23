@@ -2,9 +2,13 @@ defmodule LogjamAgent.ConfigTest do
   use ExUnit.Case, async: false
 
   setup do
+    previous_env = Application.get_env(:logjam_agent, :forwarder)
     System.put_env("LOGJAM_BROKER", "")
 
-    on_exit(fn -> System.put_env("LOGJAM_BROKER", "") end)
+    on_exit(fn ->
+      Application.put_env(:logjam_agent, :forwarder, previous_env)
+      System.put_env("LOGJAM_BROKER", "")
+    end)
 
     :ok
   end

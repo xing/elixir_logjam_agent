@@ -173,26 +173,30 @@ defmodule LogjamAgent.ActionTest do
 
   describe "full stack test, including plugins" do
     test "halting action publishes to logjam" do
-      %Plug.Conn{}
+      conn = %Plug.Conn{}
       |> Plug.Adapters.Test.Conn.conn("get", "/halted", nil)
       |> TestRouter.call(TestRouter.init([]))
+      current_request_id = LogjamAgent.Metadata.current_request_id
 
       assert [[msg]] = all_forwarded_log_messages
       assert all_log_messages_forwarded?
       assert {:log, %{action: "ActionTest::TestRoutedController#halted_action"}} = msg
+      assert ["logjam_agent-test-#{current_request_id}"] == Plug.Conn.get_resp_header(conn, "x-logjam-request-id")
 
       {:log, %{lines: [[0, _date, line0]]}} = msg
       assert String.contains?(line0, "debug:plug:halt")
     end
 
     test "normal action publishes to logjam" do
-      %Plug.Conn{}
+      conn = %Plug.Conn{}
       |> Plug.Adapters.Test.Conn.conn("get", "/normal", nil)
       |> TestRouter.call(TestRouter.init([]))
+      current_request_id = LogjamAgent.Metadata.current_request_id
 
       assert [[msg]] = all_forwarded_log_messages
       assert all_log_messages_forwarded?
       assert {:log, %{action: "ActionTest::TestRoutedController#normal_action"}} = msg
+      assert ["logjam_agent-test-#{current_request_id}"] == Plug.Conn.get_resp_header(conn, "x-logjam-request-id")
     end
 
     test "action raising exception publishes to logjam" do
