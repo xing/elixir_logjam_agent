@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.11
+
+* report just `request_id` to logjam, but full `current_caller_id` in HTTP header (#19)
+
 ## 0.5.10
 
 * fix breakage and memory leaks introduced in 0.5.9 (#18)
