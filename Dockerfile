@@ -1,4 +1,4 @@
-FROM docker.dc.xing.com/xingbox/xing-base-elixir:latest
+FROM docker.dc.xing.com/xingbox/xing-base-elixir:1.3.2-otp18.3
 
 COPY mix* /app/
 
