@@ -31,7 +31,7 @@ defmodule LogjamAgent.HandlerTest do
       delay: 0
     }
 
-    Message.create("TEST_QUEUE", JSON.encode!(payload), amqp_state, handler_settings)
+    Message.load("TEST_QUEUE", JSON.encode!(payload), amqp_state, handler_settings)
   end
 
   def process(msg) do
