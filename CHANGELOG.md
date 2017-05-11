@@ -1,5 +1,11 @@
 # Changelog
 
+
+## 0.5.12
+
+* Update exbeetle to v0.6.0 [#20](https://source.xing.com/hex/logjam_agent/pull/20)
+
+
 ## 0.5.11
 
 * report just `request_id` to logjam, but full `current_caller_id` in HTTP header (#19)
