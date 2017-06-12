@@ -30,9 +30,8 @@ defmodule LogjamAgent.Instrumentation.Simple do
   end
 
   def result_code(result)
-  def result_code({:ok, _result}), do: 200
   def result_code(:exception),     do: 500
-  def result_code(_),              do: 401
+  def result_code(_),              do: 200
 
   def result(result)
   def result(:exception), do: :error

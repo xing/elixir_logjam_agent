@@ -22,7 +22,7 @@ defmodule LogjamAgent.SimpleTest do
             |> put_in([:assigns, :request_id], LogjamAgent.Metadata.current_request_id)
             |> put_in([:assigns, :action], LogjamAgent.Metadata.fetch(:action))
 
-      {:ok, new}
+      new
     end
 
     def other(_context) do
@@ -39,24 +39,24 @@ defmodule LogjamAgent.SimpleTest do
 
   test "clears request_id after process" do
     refute LogjamAgent.Metadata.current_request_id
-    assert {:ok, _context} = perform_action
+    perform_action
     refute LogjamAgent.Metadata.current_request_id
   end
 
   test "instrumented actions publish to logjam" do
-    assert {:ok, _context} = perform_action
+    perform_action
     assert [[msg]] = all_forwarded_log_messages
     assert {:log, %{action: "SimpleTest::TestSimple#process"}} = msg
   end
 
   test "successful runs are represented as 200 status code" do
-    assert {:ok, _context} = perform_action
+    perform_action
     assert [[msg]] = all_forwarded_log_messages
     assert {:log, %{code: 200}} = msg
   end
 
   test "request_id and action are assigned to the process" do
-    assert {:ok, context} = perform_action
+    context = perform_action
     assert context.assigns.request_id
     assert context.assigns.action == "SimpleTest::TestSimple#process"
   end

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.14
+* Simple instrumentation does not require particular return value of instrumented function
+  [#22](https://source.xing.com/hex/logjam_agent/pull/22)
+
 ## 0.5.13
 * Introduce Simple instrumentation for vanilla Elixir functions [#21](https://source.xing.com/hex/logjam_agent/pull/21)
 
