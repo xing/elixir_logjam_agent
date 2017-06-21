@@ -51,4 +51,17 @@ defmodule LogjamAgent.Forwarders.ZMQForwarderTest do
       _zclock_time::big-integer-unsigned-size(64),
       1::big-integer-unsigned-size(64)>> = meta
   end
+
+  test "shuts down forwarder on parent exit", %{config: config} do
+    parent = spawn(fn -> Process.sleep(1000) end)
+    {:ok, forwarder} = GenServer.start(ZMQForwarder, {parent, config})
+
+    assert Process.alive?(parent)
+    assert Process.alive?(forwarder)
+
+    Process.exit(parent, :kill)
+    Process.sleep(5)
+
+    refute Process.alive?(forwarder)
+  end
 end

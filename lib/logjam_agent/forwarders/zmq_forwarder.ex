@@ -14,7 +14,7 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
   def default_endpoint, do: {:tcp, "localhost", @default_port}
 
   def start(config) do
-    GenServer.start(__MODULE__, config)
+    GenServer.start(__MODULE__, {self, config})
   end
 
   def forward(pid, msg)
@@ -29,10 +29,11 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
     GenServer.stop(pid, :normal, @stop_timeo)
   end
 
-  def init(config) do
+  def init({parent_pid, config}) do
     {:ok, socket} = create_socket
     :ok           = connect(socket, config)
-    state         = %{socket: socket, config: config, sequence: @sequence_start}
+    parent_ref    = Process.monitor(parent_pid)
+    state         = %{socket: socket, config: config, sequence: @sequence_start, parent_ref: parent_ref}
     {:ok, state}
   end
 
@@ -44,6 +45,13 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
   def handle_call({:forward, msg}, _from, %{config: config} = state) do
     {app_env, key, encoded_msg} = prepare_message(config, msg)
     send_receive(state, app_env, key, encoded_msg)
+  end
+
+  def handle_info({:DOWN, parent_ref, :process, _pid, _reason}, %{parent_ref: parent_ref} = state) do
+    {:stop, :shutdown, state}
+  end
+  def handle_info({:DOWN, _reference, :process, _pid, _reason}, state) do
+    {:noreply, state}
   end
 
   def terminate(reason, socket)
