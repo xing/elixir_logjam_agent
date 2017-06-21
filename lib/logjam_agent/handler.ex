@@ -73,7 +73,8 @@ defmodule LogjamAgent.Handler do
           action_started_at: :os.timestamp,
           request_headers:   message.headers,
           query_string:      "",
-          method:            nil
+          method:            nil,
+          request_path:      nil
         })
       end
 

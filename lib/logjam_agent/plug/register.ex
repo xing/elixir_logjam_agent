@@ -14,6 +14,7 @@ defmodule LogjamAgent.Plug.Register do
       request_headers:   conn.req_headers,
       query_string:      conn.query_string,
       method:            conn.method,
+      request_path:      conn.request_path,
       action_started_at: :os.timestamp
     }
     Buffer.store_if_missing(logjam_request_id, env)

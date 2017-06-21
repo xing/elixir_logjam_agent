@@ -121,4 +121,22 @@ defmodule LogjamAgent.TransformerTest do
     result = T.to_logjam_msg(data)
     assert result[:request_info][:method] == "GET"
   end
+
+  test "#to_logjam_msg includes the URL", data do
+    result = T.to_logjam_msg(data)
+    assert result[:request_info][:url] == "some/path?fields=a%2Cb&foo=bar"
+
+    data = Map.put(data, :query_string, "")
+    result = T.to_logjam_msg(data)
+    assert result[:request_info][:url] == "some/path"
+  end
+
+  test "#to_logjam_msg filters sensitive parameters", data do
+    data = Map.put(data, :query_string, "fields=a,b&password=123")
+
+    result = T.to_logjam_msg(data)
+
+    assert result[:request_info][:query_parameters] == %{"fields" => "a,b", "password" => "[FILTERED]"}
+    assert result[:request_info][:url] == "some/path?fields=a%2Cb&password=%5BFILTERED%5D"
+  end
 end

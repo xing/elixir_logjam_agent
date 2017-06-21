@@ -113,15 +113,32 @@ defmodule LogjamAgent.Transformer do
   def add_request_info(output, input) do
     req_headers = Map.get(input, :request_headers, []) |> to_string_map
     query_string = Map.get(input, :query_string, "")
+    request_path = Map.get(input, :request_path, "")
+    query_params_clean = query_string
+                         |> Plug.Conn.Query.decode
+                         |> filter_sensitive_params
+
+    url = if query_string != "" do
+      request_path <> "?" <> Plug.Conn.Query.encode(query_params_clean)
+    else
+      request_path
+    end
 
     output
     |> Map.put(:caller_id, req_headers["x-logjam-caller-id"])
     |> Map.put(:caller_action, req_headers["x-logjam-action"])
     |> Map.put(:request_info, %{
-        query_parameters: Plug.Conn.Query.decode(query_string),
+        query_parameters: query_params_clean,
         headers: req_headers,
-        method:  input[:method]
+        method:  input[:method],
+        url:     url
        })
+  end
+
+  @sensitive_params %{"password" => "[FILTERED]"}
+  defp filter_sensitive_params(params) when is_map(params) do
+    masked_sensitive_params = Map.take(@sensitive_params, Map.keys(params))
+    Map.merge(params, masked_sensitive_params)
   end
 
   defp to_string_map(input)

@@ -12,6 +12,7 @@ defmodule TestLogData do
         {"accept", "application/json"}
       ],
       query_string: "foo=bar&fields=a,b",
+      request_path: "some/path",
       caller_action: "CALLER_ACTION",
       caller_id: "CALLER_ID",
       rest_time: 25.99,

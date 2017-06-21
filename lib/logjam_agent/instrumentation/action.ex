@@ -11,7 +11,8 @@ defmodule LogjamAgent.Instrumentation.Action do
         function:        action,
         request_headers: unquote(conn).req_headers,
         query_string:    unquote(conn).query_string,
-        method:          unquote(conn).method
+        method:          unquote(conn).method,
+        request_path:    unquote(conn).request_path
       }
 
       LogjamAgent.Metadata.store(%{action: action_name})
