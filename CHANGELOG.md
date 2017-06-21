@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.15
+
+* fix possible memory/process leak with ZMQForwarder during bursts
+  [#23](https://source.xing.com/hex/logjam_agent/pull/23)
+* pass request URL to logjam as well and filter out sensitive parameters
+  [#24](https://source.xing.com/hex/logjam_agent/pull/24)
+
 ## 0.5.14
 * Simple instrumentation does not require particular return value of instrumented function
   [#22](https://source.xing.com/hex/logjam_agent/pull/22)
