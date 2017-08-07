@@ -35,7 +35,6 @@ defmodule LogjamAgent.Plug.Register do
       action_name = LogjamAgent.Transformer.logjam_action_name(module, action)
       Buffer.store_if_missing(logjam_request_id, %{module: module, function: action})
       Conn.put_resp_header(conn, "x-logjam-request-action", action_name)
-      conn
     rescue
       KeyError -> conn
     end

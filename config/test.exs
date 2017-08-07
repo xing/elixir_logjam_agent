@@ -11,3 +11,5 @@ config :logjam_agent, :forwarder,
 
 # Stub shim for testing
 config :logjam_agent, :forwarder_module, LogjamAgent.Forwarders.Stub
+
+config :plug, :validate_header_keys_during_test, true

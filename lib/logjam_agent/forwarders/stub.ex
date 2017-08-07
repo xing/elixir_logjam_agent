@@ -27,12 +27,12 @@ defmodule LogjamAgent.Forwarders.Stub do
   def all_forwarders do
     Pool.pool_name
       |> GenServer.call(:get_all_workers)
-      |> Enum.map(fn {_,proxy,_,_} -> Proxy.forwarder_pid(proxy) end)
+      |> Enum.map(fn {_, proxy, _, _} -> Proxy.forwarder_pid(proxy) end)
       |> Enum.reject(&is_nil/1)
   end
 
   def configs do
-    Enum.map(all_forwarders, &__MODULE__.config/1)
+    Enum.map(all_forwarders(), &__MODULE__.config/1)
   end
 
   def config(pid) do
@@ -40,7 +40,7 @@ defmodule LogjamAgent.Forwarders.Stub do
   end
 
   def messages do
-    Enum.map(all_forwarders, &__MODULE__.messages/1)
+    Enum.map(all_forwarders(), &__MODULE__.messages/1)
   end
 
   def clear(pid) do
@@ -48,7 +48,7 @@ defmodule LogjamAgent.Forwarders.Stub do
   end
 
   def clear_all do
-    Enum.map(all_forwarders, &__MODULE__.clear/1)
+    Enum.map(all_forwarders(), &__MODULE__.clear/1)
   end
 
   def init(config) do

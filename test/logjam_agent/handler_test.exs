@@ -50,7 +50,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert "HandlerTest::TestHandler#process" = logjam_msg.action
     end
 
@@ -58,7 +58,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert 200 = logjam_msg.code
     end
 
@@ -66,7 +66,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert 2 = logjam_msg.severity
     end
 
@@ -74,7 +74,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert logjam_msg.host
     end
 
@@ -82,7 +82,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert is_binary(logjam_msg.request_id)
       assert Regex.match?(~r/^[\w\d]{32}$/, logjam_msg.request_id)
     end
@@ -92,7 +92,7 @@ defmodule LogjamAgent.HandlerTest do
       process(msg)
       process(msg)
 
-      assert [[log: logjam_msg1, log: logjam_msg2]] = all_forwarded_log_messages
+      assert [[log: logjam_msg1, log: logjam_msg2]] = all_forwarded_log_messages()
       assert logjam_msg1.request_id != logjam_msg2.request_id
     end
 
@@ -100,7 +100,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert is_integer(logjam_msg.total_time)
     end
 
@@ -108,7 +108,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: %{request_info: request_info}]] = all_forwarded_log_messages
+      assert [[log: %{request_info: request_info}]] = all_forwarded_log_messages()
       refute request_info.method
       assert %{} = request_info.query_parameters
       assert %{
@@ -120,7 +120,7 @@ defmodule LogjamAgent.HandlerTest do
       msg = create_message(%{})
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert [
         [1, _, log_line1],
         [1, _, log_line2],
@@ -143,7 +143,7 @@ defmodule LogjamAgent.HandlerTest do
 
       process(msg)
 
-      assert [[log: logjam_msg]] = all_forwarded_log_messages
+      assert [[log: logjam_msg]] = all_forwarded_log_messages()
       assert [
         [1, _, log_line1],
         [1, _, log_line2],

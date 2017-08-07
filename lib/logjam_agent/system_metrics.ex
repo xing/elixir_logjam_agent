@@ -10,7 +10,7 @@ defmodule LogjamAgent.SystemMetrics do
   end
 
   def init(_) do
-    {:ok, %{host: hostname}}
+    {:ok, %{host: hostname()}}
   end
 
   def handle_call(:get, _from, state) do

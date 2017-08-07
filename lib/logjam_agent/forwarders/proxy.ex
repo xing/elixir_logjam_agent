@@ -12,7 +12,7 @@ defmodule LogjamAgent.Forwarders.Proxy do
 
   def init(_) do
     state = %{config: Config.current}
-    Process.send_after(self, :connect, state.config.initial_connect_delay)
+    Process.send_after(self(), :connect, state.config.initial_connect_delay)
     {:ok, state}
   end
 
@@ -51,7 +51,7 @@ defmodule LogjamAgent.Forwarders.Proxy do
     try do
       @forwarder.forward(forwarder_pid, {type, msg})
     after
-      Pool.checkin(self)
+      Pool.checkin(self())
     end
 
     {:noreply, state}

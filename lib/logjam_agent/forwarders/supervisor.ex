@@ -12,8 +12,8 @@ defmodule LogjamAgent.Forwarders.Supervisor do
     opts = [
       name: {:local, Pool.pool_name},
       worker_module: Proxy,
-      max_overflow: config.pool_max_overflow,
-      size: config.pool_size
+      max_overflow: config().pool_max_overflow,
+      size: config().pool_size
     ]
 
     children = [

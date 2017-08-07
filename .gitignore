@@ -4,4 +4,5 @@ erl_crash.dump
 *.ez
 /rel
 /log
-.tool-versions*
+Dockerfile-generated
+lib/xing_application_information.ex

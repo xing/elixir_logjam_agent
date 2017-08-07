@@ -1,0 +1,10 @@
+name: logjam_agent
+type: elixir-app
+os_release: xenial
+repository: git://source.xing.com/hex/logjam_agent.git
+image: docker.dc.xing.com/hex/logjam_agent
+otp_version: 20.0
+elixir_version: 1.4.5
+target:
+  release:
+    mix_env: test

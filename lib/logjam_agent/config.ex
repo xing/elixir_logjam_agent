@@ -24,7 +24,7 @@ defmodule LogjamAgent.Config do
   end
 
   defp update_settings_from_environment!(settings) do
-    parse_endpoints!(raw_endpoints, settings)
+    parse_endpoints!(raw_endpoints(), settings)
   end
 
   defp raw_endpoints do

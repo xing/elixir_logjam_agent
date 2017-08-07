@@ -24,7 +24,6 @@ defmodule LogjamAgent.Forwarders.ZMQForwarderTest do
     {:ok, context}
   end
 
-  @lint {Credo.Check.Consistency.SpaceAroundOperators, false}
   test "can forward messages to another socket", %{forwarder: forwarder, data: data, receiver: receiver} do
     :ok = ZMQForwarder.forward(forwarder, {:log, data})
 

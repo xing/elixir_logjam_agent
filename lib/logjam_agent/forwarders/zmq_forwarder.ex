@@ -14,7 +14,7 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
   def default_endpoint, do: {:tcp, "localhost", @default_port}
 
   def start(config) do
-    GenServer.start(__MODULE__, {self, config})
+    GenServer.start(__MODULE__, {self(), config})
   end
 
   def forward(pid, msg)
@@ -30,7 +30,7 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
   end
 
   def init({parent_pid, config}) do
-    {:ok, socket} = create_socket
+    {:ok, socket} = create_socket()
     :ok           = connect(socket, config)
     parent_ref    = Process.monitor(parent_pid)
     state         = %{socket: socket, config: config, sequence: @sequence_start, parent_ref: parent_ref}
@@ -150,7 +150,6 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
     end
   end
 
-  @lint {Credo.Check.Consistency.SpaceAroundOperators, false}
   @meta_info_version 1
   @meta_info_tag 0xcabd
   @meta_info_device_number 0
@@ -160,7 +159,7 @@ defmodule LogjamAgent.Forwarders.ZMQForwarder do
       @compression_method::big-integer-unsigned-size(8),
       @meta_info_version::integer-unsigned-size(8),
       @meta_info_device_number::big-integer-unsigned-size(32),
-      zclock_time::big-integer-unsigned-size(64),
+      zclock_time()::big-integer-unsigned-size(64),
       sequence::big-integer-unsigned-size(64)>>
   end
 

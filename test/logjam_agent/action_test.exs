@@ -60,7 +60,7 @@ defmodule LogjamAgent.ActionTest do
     end
 
     def raising_action(conn, _params) do
-      1 = 2
+      raise "I raise because I can"
     end
 
     plug :halting_plug when action == :halted_action
@@ -106,7 +106,7 @@ defmodule LogjamAgent.ActionTest do
     test "instrumented actions publish to logjam" do
       TestModWithoutOptions.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
-      assert [[msg]] = all_forwarded_log_messages
+      assert [[msg]] = all_forwarded_log_messages()
       assert {:log, %{action: "ActionTest::TestModWithoutOptions#some_action"}} = msg
     end
 
@@ -120,7 +120,7 @@ defmodule LogjamAgent.ActionTest do
     test "action/2 is globally excluded" do
       TestModWithoutOptions.action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"}, :argument)
 
-      assert [[]] = all_forwarded_log_messages
+      assert [[]] = all_forwarded_log_messages()
     end
   end
 
@@ -137,27 +137,27 @@ defmodule LogjamAgent.ActionTest do
     test "instrumented actions publish to logjam" do
       TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
-      assert [[msg]] = all_forwarded_log_messages
+      assert [[msg]] = all_forwarded_log_messages()
       assert {:log, %{action: "ActionTest::TestMod#some_action"}} = msg
     end
 
     test "exclude actions if name and arity match" do
       TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"}, :additional_argument)
 
-      assert [[]] = all_forwarded_log_messages
+      assert [[]] = all_forwarded_log_messages()
     end
 
     test "does not exclude if the name matches but not the arity" do
       TestMod.some_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
-      assert [[msg]] = all_forwarded_log_messages
+      assert [[msg]] = all_forwarded_log_messages()
       assert {:log, %{action: "ActionTest::TestMod#some_action"}} = msg
     end
 
     test "action/2 is globally excluded by default" do
       TestMod.action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"}, :argument)
 
-      assert [[]] = all_forwarded_log_messages
+      assert [[]] = all_forwarded_log_messages()
     end
 
     test "uninstrumented actions retain their functionality" do
@@ -167,7 +167,7 @@ defmodule LogjamAgent.ActionTest do
     test "uninstrumented action do not publish to logjam" do
       TestMod.excluded_action(%Plug.Conn{req_headers: %{}, query_string: "foo", method: "get"})
 
-      assert [[]] = all_forwarded_log_messages
+      assert [[]] = all_forwarded_log_messages()
     end
   end
 
@@ -178,8 +178,8 @@ defmodule LogjamAgent.ActionTest do
       |> TestRouter.call(TestRouter.init([]))
       current_request_id = LogjamAgent.Metadata.current_request_id
 
-      assert [[msg]] = all_forwarded_log_messages
-      assert all_log_messages_forwarded?
+      assert [[msg]] = all_forwarded_log_messages()
+      assert all_log_messages_forwarded?()
       assert {:log, %{action: "ActionTest::TestRoutedController#halted_action"}} = msg
       assert ["logjam_agent-test-#{current_request_id}"] == Plug.Conn.get_resp_header(conn, "x-logjam-request-id")
 
@@ -193,8 +193,8 @@ defmodule LogjamAgent.ActionTest do
       |> TestRouter.call(TestRouter.init([]))
       current_request_id = LogjamAgent.Metadata.current_request_id
 
-      assert [[msg]] = all_forwarded_log_messages
-      assert all_log_messages_forwarded?
+      assert [[msg]] = all_forwarded_log_messages()
+      assert all_log_messages_forwarded?()
       assert {:log, %{action: "ActionTest::TestRoutedController#normal_action"}} = msg
       assert ["logjam_agent-test-#{current_request_id}"] == Plug.Conn.get_resp_header(conn, "x-logjam-request-id")
     end
@@ -206,8 +206,8 @@ defmodule LogjamAgent.ActionTest do
         |> TestRouter.call(TestRouter.init([]))
       end)
 
-      assert [[msg]] = all_forwarded_log_messages
-      assert all_log_messages_forwarded?
+      assert [[msg]] = all_forwarded_log_messages()
+      assert all_log_messages_forwarded?()
       assert {:log, %{action: "ActionTest::TestRoutedController#raising_action"}} = msg
     end
   end

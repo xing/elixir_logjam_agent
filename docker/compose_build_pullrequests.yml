@@ -1,0 +1,7 @@
+version: '2'
+services:
+  main:
+    image: docker.dc.xing.com/hex/logjam_agent:test-pr
+    entrypoint: bash -c 'mix test && mix credo && mix dialyzer'
+    environment:
+      LOGJAM_BROKER: localhost

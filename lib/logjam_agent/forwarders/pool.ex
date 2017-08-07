@@ -41,7 +41,7 @@ defmodule LogjamAgent.Forwarders.Pool do
   def handle_call(:reload_config, _from, state) do
     config = Config.current
 
-    pool_name
+    pool_name()
       |> GenServer.call(:get_all_workers)
       |> Enum.each(fn({_, worker_pid, _, _}) ->
           Proxy.reload_config(worker_pid, config)
@@ -62,7 +62,7 @@ defmodule LogjamAgent.Forwarders.Pool do
 
   defp message_high_water_mark?(nil), do: false
   defp message_high_water_mark?(high_water_mark) do
-    {:message_queue_len, len} = Process.info(self, :message_queue_len)
+    {:message_queue_len, len} = Process.info(self(), :message_queue_len)
     len > high_water_mark
   end
 end

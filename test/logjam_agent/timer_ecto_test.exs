@@ -38,7 +38,7 @@ defmodule LogjamAgent.TimerEctoTest do
     TimerEcto.log(log_entry)
 
     assert 1 == Metadata.fetch(:db_calls)
-    assert 123*3 == Metadata.fetch(:db_time)
+    assert 123 * 3 == Metadata.fetch(:db_time)
   end
 
   test "log/1 counts calls and adds times on multiple queries" do
@@ -52,7 +52,7 @@ defmodule LogjamAgent.TimerEctoTest do
     TimerEcto.log(log_entry)
 
     assert 2 == Metadata.fetch(:db_calls)
-    assert 123*2 == Metadata.fetch(:db_time)
+    assert 123 * 2 == Metadata.fetch(:db_time)
   end
 
   test "log/1 converts times into milliseconds before logging" do

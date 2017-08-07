@@ -31,44 +31,45 @@ defmodule LogjamAgent.SimpleTest do
   end
 
   def perform_action(opts \\ []) do
-    params = Dict.get(opts, :params, %{})
-    context = Dict.get(opts, :context, %{assigns: %{}})
+    params = Keyword.get(opts, :params, %{})
+    context = Keyword.get(opts, :context, %{assigns: %{}})
 
     TestSimple.process(params, context)
   end
 
+  # credo:disable-for-this-file Credo.Check.Design.DuplicatedCode
   test "clears request_id after process" do
     refute LogjamAgent.Metadata.current_request_id
-    perform_action
+    perform_action()
     refute LogjamAgent.Metadata.current_request_id
   end
 
   test "instrumented actions publish to logjam" do
-    perform_action
-    assert [[msg]] = all_forwarded_log_messages
+    perform_action()
+    assert [[msg]] = all_forwarded_log_messages()
     assert {:log, %{action: "SimpleTest::TestSimple#process"}} = msg
   end
 
   test "successful runs are represented as 200 status code" do
-    perform_action
-    assert [[msg]] = all_forwarded_log_messages
+    perform_action()
+    assert [[msg]] = all_forwarded_log_messages()
     assert {:log, %{code: 200}} = msg
   end
 
   test "request_id and action are assigned to the process" do
-    context = perform_action
+    context = perform_action()
     assert context.assigns.request_id
     assert context.assigns.action == "SimpleTest::TestSimple#process"
   end
 
   test "exceptions are represented as 500 status code" do
     assert :error = perform_action(params: %{exception: true})
-    assert [[msg]] = all_forwarded_log_messages
+    assert [[msg]] = all_forwarded_log_messages()
     assert {:log, %{code: 500}} = msg
   end
 
   test "other functions stay uninstrumented" do
     assert :other = TestSimple.other(:nil)
-    assert [[]] = all_forwarded_log_messages
+    assert [[]] = all_forwarded_log_messages()
   end
 end

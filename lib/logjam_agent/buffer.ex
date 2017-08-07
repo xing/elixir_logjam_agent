@@ -4,7 +4,7 @@ defmodule LogjamAgent.Buffer do
   alias LogjamAgent.{Transformer, Forwarders}
 
   def start_link do
-    Agent.start_link(fn -> HashDict.new end, name: __MODULE__)
+    Agent.start_link(fn -> Map.new end, name: __MODULE__)
   end
 
   def instrument(request_id, env, action) do
@@ -13,7 +13,7 @@ defmodule LogjamAgent.Buffer do
     result = try do
       action.()
     catch
-      kind, reason -> log_error_and_reraise(kind, reason, System.stacktrace, %{logjam_request_id: request_id, pid: self})
+      kind, reason -> log_error_and_reraise(kind, reason, System.stacktrace, %{logjam_request_id: request_id, pid: self()})
     after
       finish_request(request_id, __MODULE__)
     end
@@ -34,10 +34,10 @@ defmodule LogjamAgent.Buffer do
 
   def log(_, _, _, %{logjam_request_id: request_id, logjam_signal: :finished}) do
     buffer = Agent.get_and_update(__MODULE__, fn(state) ->
-      {state[request_id], Dict.delete(state, request_id)}
+      {state[request_id], Map.delete(state, request_id)}
     end)
 
-    if(buffer) do
+    if buffer do
       buffer
       |> Enum.into(%{})
       |> Transformer.to_logjam_msg
@@ -61,15 +61,15 @@ defmodule LogjamAgent.Buffer do
   def log(_, _, _, _), do: nil
 
   def fetch(request_id, key) do
-    Agent.get(__MODULE__, fn(state) -> Dict.get(state, request_id)[key] end)
+    Agent.get(__MODULE__, fn(state) -> Map.get(state, request_id)[key] end)
   end
 
   def create(request_id) do
     result = Agent.get_and_update(__MODULE__, fn(state) ->
-      if Dict.has_key?(state, request_id) do
+      if Map.has_key?(state, request_id) do
         {:already_exists, state}
       else
-        {:ok, Dict.put(state, request_id, %{request_id: request_id, log_messages: []})}
+        {:ok, Map.put(state, request_id, %{request_id: request_id, log_messages: []})}
       end
     end)
 
@@ -97,8 +97,8 @@ defmodule LogjamAgent.Buffer do
 
   defp update_buffer(request_id, updater) do
     Agent.update(__MODULE__, fn(state) ->
-      if Dict.has_key?(state, request_id) do
-        Dict.update!(state, request_id, updater)
+      if Map.has_key?(state, request_id) do
+        Map.update!(state, request_id, updater)
       else
         state
       end

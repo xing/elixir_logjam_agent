@@ -149,7 +149,7 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp to_string_map(input) do
-    Enum.into(input, %{}, fn{k,v} -> {to_string(k), stringify(v)} end)
+    Enum.into(input, %{}, fn{k, v} -> {to_string(k), stringify(v)} end)
   end
 
   defp stringify(value)
@@ -165,14 +165,14 @@ defmodule LogjamAgent.Transformer do
   end
 
   defp logger_timestamp_to_iso8601({date, {h, m, s, micro}}) do
-    to_logjam_iso8601({date, {h,m,s}}, micro)
+    to_logjam_iso8601({date, {h, m, s}}, micro)
   end
 
   defp to_logjam_iso8601(time, micro) do
     "#{to_logjam_iso8601(time)}.#{micro}"
   end
 
-  defp to_logjam_iso8601({{year,month,day},{hour,minute,second}}) do
+  defp to_logjam_iso8601({{year, month, day}, {hour, minute, second}}) do
     "#{year}-#{pad month}-#{pad day}T#{pad hour}:#{pad minute}:#{pad second}"
   end
 

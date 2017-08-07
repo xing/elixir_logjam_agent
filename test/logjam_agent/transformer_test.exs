@@ -36,7 +36,7 @@ defmodule LogjamAgent.TransformerTest do
   end
 
   test "#to_logjam_msg can calculates the diff action and first response sent", data do
-    result = data |> Dict.put(:response_send_at, {1411, 69_000, 117_735}) |> T.to_logjam_msg
+    result = data |> Map.put(:response_send_at, {1411, 69_000, 117_735}) |> T.to_logjam_msg
     assert result.total_time == 12_813_000
   end
 
@@ -46,7 +46,7 @@ defmodule LogjamAgent.TransformerTest do
   end
 
   test "#to_logjam_msg checks for override_action field", data do
-    result = data |> Dict.put(:override_action, "Foo#bar") |> T.to_logjam_msg
+    result = data |> Map.put(:override_action, "Foo#bar") |> T.to_logjam_msg
     assert result.action == "Foo#bar"
   end
 

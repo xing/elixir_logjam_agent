@@ -10,14 +10,14 @@ defmodule LogjamAgent.Forwarders.PoolTest do
   test "forwards a log message to a forwarder process", %{log_msg: log_msg} do
     Pool.forward(log_msg)
 
-    assert [worker_msgs] = all_forwarded_log_messages
+    assert [worker_msgs] = all_forwarded_log_messages()
     assert [{:log, ^log_msg}] = worker_msgs
   end
 
   test "forwards an event message to a forwarder process", %{event_msg: event_msg} do
     Pool.forward_event(event_msg)
 
-    assert [worker_msgs] = all_forwarded_log_messages
+    assert [worker_msgs] = all_forwarded_log_messages()
     assert [{:event, ^event_msg}] = worker_msgs
   end
 
@@ -26,7 +26,7 @@ defmodule LogjamAgent.Forwarders.PoolTest do
       Pool.forward(log_msg)
       Pool.forward_event(event_msg)
 
-      assert [] = all_forwarded_log_messages
+      assert [] = all_forwarded_log_messages()
     end)
   end
 
@@ -34,7 +34,7 @@ defmodule LogjamAgent.Forwarders.PoolTest do
     switch_config([message_high_water_mark: 2, enabled: true], fn ->
       forward_n_copies(log_msg, 10)
 
-      assert [worker_msgs] = all_forwarded_log_messages
+      assert [worker_msgs] = all_forwarded_log_messages()
       assert Enum.count(worker_msgs) == 3
     end)
   end

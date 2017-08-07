@@ -1,6 +1,6 @@
 #!/bin/sh
 
-docker build --pull -t hex-logjam-agent-test .
+set -e
 
-# the redirect works around a bug in the erlang vm: https://github.com/edevil/docker-erlang-bug#explanation
-docker run --rm hex-logjam-agent-test bash -c 'mix test 1>&1'
+docker-build --target test --tag test-latest .
+docker-test docker/compose_build_master.yml
