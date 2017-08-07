@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+* compatibility changes for OTP 20.0 / Elixir 1.4.5 [#25](https://source.xing.com/hex/logjam_agent/pull/25)
+
 ## 0.5.15
 
 * fix possible memory/process leak with ZMQForwarder during bursts
