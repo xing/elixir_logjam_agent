@@ -124,15 +124,19 @@ defmodule LogjamAgent.Transformer do
       request_path
     end
 
+    request_info = %{
+                      query_parameters: query_params_clean,
+                      headers: req_headers,
+                      method:  input[:method],
+                      url:     url
+                    }
+                    |> Enum.reject(fn {_, v} -> v == nil || v == "" end)
+                    |> Enum.into(%{})
+
     output
     |> Map.put(:caller_id, req_headers["x-logjam-caller-id"])
     |> Map.put(:caller_action, req_headers["x-logjam-action"])
-    |> Map.put(:request_info, %{
-        query_parameters: query_params_clean,
-        headers: req_headers,
-        method:  input[:method],
-        url:     url
-       })
+    |> Map.put(:request_info, request_info)
   end
 
   @sensitive_params %{"password" => "[FILTERED]"}

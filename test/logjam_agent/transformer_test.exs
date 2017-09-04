@@ -131,6 +131,13 @@ defmodule LogjamAgent.TransformerTest do
     assert result[:request_info][:url] == "some/path"
   end
 
+  test "#to_logjam_msg does not include the URL if it is missing", data do
+    result = T.to_logjam_msg(Map.drop(data, [:request_path, :query_string, :method, :request_headers]))
+    refute result[:request_info][:url]
+    refute result[:request_info][:method]
+    assert result[:request_info][:headers] == %{}
+  end
+
   test "#to_logjam_msg filters sensitive parameters", data do
     data = Map.put(data, :query_string, "fields=a,b&password=123")
 
