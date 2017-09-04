@@ -109,7 +109,7 @@ defmodule LogjamAgent.HandlerTest do
       process(msg)
 
       assert [[log: %{request_info: request_info}]] = all_forwarded_log_messages()
-      refute request_info.method
+      refute request_info[:method]
       assert %{} = request_info.query_parameters
       assert %{
         "flags" => "1"
