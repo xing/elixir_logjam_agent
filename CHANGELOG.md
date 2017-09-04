@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+
+* Do not pass empty `url` and `method` (e.g. when logging in AMQP processor action)
+  [REG-5621](https://jira.xing.hh/browse/REG-5621)
+  [#26](https://source.xing.com/hex/logjam_agent/pull/26)
+
 ## 0.6.0
 
 * compatibility changes for OTP 20.0 / Elixir 1.4.5 [#25](https://source.xing.com/hex/logjam_agent/pull/25)
