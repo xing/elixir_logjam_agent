@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+* Use new exbeetle release
+
 ## 0.6.1
 
 * Do not pass empty `url` and `method` (e.g. when logging in AMQP processor action)
