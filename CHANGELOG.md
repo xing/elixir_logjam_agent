@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+* compatibility changes for phoenix 1.3 channels
+
 ## 0.6.3
 
 * Use new exbeetle release

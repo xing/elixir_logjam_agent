@@ -33,13 +33,17 @@ defmodule LogjamAgent.Channel do
   ```
   """
 
-  defmacro __using__(_) do
+  defmacro __using__(opts \\ []) do
     quote do
+      opts = unquote(opts)
       @behaviour Phoenix.Channel
       @before_compile unquote(__MODULE__)
       @on_definition  unquote(__MODULE__)
       @phoenix_intercepts []
       @logjam_assigns_to_log []
+
+      @phoenix_log_join Keyword.get(opts, :log_join, :info)
+      @phoenix_log_handle_in Keyword.get(opts, :log_handle_in, :debug)
 
       import unquote(__MODULE__)
       import Phoenix.Socket, only: [assign: 3]
@@ -47,6 +51,11 @@ defmodule LogjamAgent.Channel do
       require Logger
 
       Module.register_attribute(__MODULE__, :logjam_enabled_functions, accumulate: true)
+
+      def __socket__(:private) do
+        %{log_join: @phoenix_log_join,
+          log_handle_in: @phoenix_log_handle_in}
+      end
 
       def code_change(_old, socket, _extra), do: {:ok, socket}
 
