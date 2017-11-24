@@ -3,7 +3,7 @@ defmodule LogjamAgent.Mixfile do
 
   def project do
     [ app: :logjam_agent,
-      version: "0.6.2",
+      version: "0.6.3",
       elixir: "~> 1.4",
       elixirc_paths: ["lib"],
       deps: deps()]
@@ -36,7 +36,7 @@ defmodule LogjamAgent.Mixfile do
       {:poolboy,      "~> 1.5"    },
       {:lager_logger, "~> 1.0"    },
       {:ezmq,         "~> 0.2.1", git: "https://github.com/zeromq/ezmq.git"},
-      {:exbeetle,                 git: "https://source.xing.com/hex/exbeetle", tag: "v0.9.0"},
+      {:exbeetle,                 git: "https://source.xing.com/hex/exbeetle", tag: "v0.10.0"},
       {:lager,        "~> 3.5",   override: true},
       {:apex,         "~> 1.0",   only: [:dev, :test]},
       {:credo,        "~> 0.8",   only: [:dev, :test]},

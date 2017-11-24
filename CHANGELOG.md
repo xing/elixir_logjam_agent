@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.3
+
+* Use new exbeetle release
+
 ## 0.6.2
 
 * Use new exbeetle release
