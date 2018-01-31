@@ -36,7 +36,6 @@ defmodule LogjamAgent.Mixfile do
       {:poolboy,      "~> 1.5"    },
       {:lager_logger, "~> 1.0"    },
       {:ezmq,         "~> 0.2.1", git: "https://github.com/zeromq/ezmq.git"},
-      {:exbeetle,                 git: "https://source.xing.com/hex/exbeetle", tag: "v0.10.0"},
       {:lager,        "~> 3.5",   override: true},
       {:apex,         "~> 1.0",   only: [:dev, :test]},
       {:credo,        "~> 0.8",   only: [:dev, :test]},

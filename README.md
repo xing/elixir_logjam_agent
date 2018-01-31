@@ -55,20 +55,6 @@ def application do
 end
 ```
 
-### exbeetle integration
-
-All you need to do is to replace `use Exbeetle.Client.Handler` with `use LogjamAgent.Handler`.
-This will add all necessary functionality to your worker.
-
-```elixir
-defmodule Messages.AMQP.MessageSentHandler do
-  use LogjamAgent.Handler
-
-  def process(message) do
-  end
-end
-```
-
 ### Phoenix controller integration
 
 `Phoenix` also needs some minor changes.
