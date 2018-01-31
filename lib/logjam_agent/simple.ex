@@ -34,7 +34,7 @@ defmodule LogjamAgent.Simple do
   end
 
   def __on_definition__(env, kind, name, args, guards, body)
-  def __on_definition__(%{module: mod}, :def, name, args, guards, body) do
+  def __on_definition__(%{module: mod}, :def, name, args, guards, [do: body]) do
     if Module.get_attribute(mod, :logjam) do
       Module.put_attribute(mod, :logjam_enabled_functions, %Instrumentation.Definition{name: name, args: args, guards: guards, body: body})
       Module.delete_attribute(mod, :logjam)

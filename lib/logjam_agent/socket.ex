@@ -32,7 +32,7 @@ defmodule LogjamAgent.Socket do
 
   def __on_definition__(env, kind, name, args, guards, body)
   def __on_definition__(_env, :def, :connect, _args, _guards, nil), do: nil
-  def __on_definition__(%{module: mod}, :def, :connect, args, guards, body) do
+  def __on_definition__(%{module: mod}, :def, :connect, args, guards, [do: body]) do
     definition = %Instrumentation.Definition{
                    name: :connect,
                    args: args,

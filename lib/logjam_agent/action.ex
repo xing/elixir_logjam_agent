@@ -48,7 +48,7 @@ defmodule LogjamAgent.Action do
   end
 
   def __on_definition__(env, kind, name, args, guards, body)
-  def __on_definition__(%{module: mod}, :def, name, args, guards, body) do
+  def __on_definition__(%{module: mod}, :def, name, args, guards, [do: body]) do
     unless Instrumentation.exclude_action?(mod, name, Enum.count(args)) do
       Module.put_attribute(mod, :logjam_enabled_functions, %Instrumentation.Definition{name: name, args: args, guards: guards, body: body})
     end

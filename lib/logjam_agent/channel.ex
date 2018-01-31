@@ -70,7 +70,7 @@ defmodule LogjamAgent.Channel do
   @supported_functions [:join, :handle_in, :handle_out]
   def __on_definition__(env, kind, name, args, guards, body)
   def __on_definition__(_env, :def, name, _args, _guards, nil) when name in @supported_functions, do: nil
-  def __on_definition__(%{module: mod}, :def, name, args, guards, body) when name in @supported_functions and length(args) == 3 do
+  def __on_definition__(%{module: mod}, :def, name, args, guards, [do: body]) when name in @supported_functions and length(args) == 3 do
     definition = %Instrumentation.Definition{
                    name: name,
                    args: args,
