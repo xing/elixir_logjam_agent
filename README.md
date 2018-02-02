@@ -31,12 +31,12 @@ config :logjam_agent, :forwarder,
   app_name: "profileproxy",
   pool_max_overflow: 10,
   pool_size: 20,
-  endpoints:[{:tcp, "broker-1.monitor.preview.fra1.xing.com", 9604}]
+  endpoints:[{:tcp, "mybroker", 9604}]
 ```
 
 * `enabled` enables or disables the forwarder
 * `app_name` specifies the name of the app that is used in `Logjam`
-* `env` the xing environment the application runs in
+* `env` the logjam environment the application runs in
 * `initial_connect_delay` the delay in milliseconds before the forwarder should connect to the broker
 * `endpoints` specifies the endpoints for the ZMQP forwarders
 
